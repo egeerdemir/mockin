@@ -456,7 +456,8 @@ function Sidebar({ onNavClick, user, onLogout, onToggleTheme, currentTheme, acti
           const isLeaderboard = item.id === 'leaderboard';
           const isExams = item.id === 'exams';
           const isSeason = item.id === 'season';
-          const isComingSoon = !isActive && !isProfile && !isSettings && !isLeaderboard && !isExams && !isSeason;
+          const isAchievements = item.id === 'achievements';
+          const isComingSoon = !isActive && !isProfile && !isSettings && !isLeaderboard && !isExams && !isSeason && !isAchievements;
           const handleItemClick = isActive
             ? () => handleClick(item.id)
             : isProfile
@@ -469,7 +470,9 @@ function Sidebar({ onNavClick, user, onLogout, onToggleTheme, currentTheme, acti
                     ? () => onNavClick && onNavClick('exams')
                     : isSeason
                       ? () => onNavClick && onNavClick('season')
-                      : undefined;
+                      : isAchievements
+                        ? () => onNavClick && onNavClick('achievements')
+                        : undefined;
           return (
             <div key={item.id} className="relative group">
               <button

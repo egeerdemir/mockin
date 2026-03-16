@@ -75,7 +75,7 @@ function ClassLeaderboard({ classId, cls, rankData, userName }) {
             key={entry.name + i}
             rank={i + 1}
             name={entry.name}
-            points={entry.points}
+            points={entry.pts}
             checkpointsDone={entry.checkpointsDone || 0}
             isCurrentUser={entry.name === userName}
           />
