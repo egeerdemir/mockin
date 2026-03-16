@@ -736,29 +736,31 @@ function StickyRankBar({ classes, user }) {
   const tagV   = topPct !== null ? (topPct <= 10 ? 'mint' : topPct <= 25 ? 'lavender' : 'coral') : 'default';
   return (
     <>
-      <div id="sticky-rank-bar" className="fixed bottom-0 left-0 right-0 lg:left-56 lg:right-72 bg-dk-card border-t border-dk-border shadow-pop px-6 py-3 flex items-center justify-between z-50">
-        <div className="flex items-center gap-4">
+      <div id="sticky-rank-bar" className="fixed bottom-0 left-0 right-0 lg:left-56 lg:right-72 bg-dk-card border-t border-dk-border shadow-pop px-4 lg:px-6 py-2.5 flex items-center justify-between z-50">
+        <div className="flex items-center gap-3">
           <Avatar initials={initials} color="bg-coral" size="sm" />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
             <div>
-              <p className="text-dk-muted text-2xs leading-none mb-0.5">Overall Rank</p>
+              <p className="text-dk-muted text-2xs leading-none mb-0.5 hidden lg:block">Overall Rank</p>
               {rank
-                ? <p className="font-mono font-bold text-coral text-base leading-none">#{rank} <span className="text-dk-muted font-normal text-xs">/{total}</span></p>
-                : <p className="font-mono font-bold text-dk-muted text-base leading-none">—</p>
+                ? <p className="font-mono font-bold text-coral text-sm lg:text-base leading-none">#{rank} <span className="text-dk-muted font-normal text-xs">/{total}</span></p>
+                : <p className="font-mono font-bold text-dk-muted text-sm leading-none">—</p>
               }
             </div>
-            <div className="h-6 w-px bg-dk-border" />
+            <div className="h-5 w-px bg-dk-border" />
             {topPct !== null ? <Tag variant={tagV}>Top {topPct}%</Tag> : <Tag variant="default">New</Tag>}
-            <div className="h-6 w-px bg-dk-border" />
+            <div className="h-5 w-px bg-dk-border" />
             <div>
-              <p className="text-dk-muted text-2xs leading-none mb-0.5">Points</p>
-              <p className="font-mono font-bold text-dk-text text-base leading-none">{totalPts.toLocaleString()}</p>
+              <p className="text-dk-muted text-2xs leading-none mb-0.5 hidden lg:block">Points</p>
+              <p className="font-mono font-bold text-dk-text text-sm lg:text-base leading-none">{totalPts.toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 lg:gap-3">
           <span className="text-dk-muted text-xs font-mono hidden lg:block">{SEASON.name}</span>
-          <button id="full-leaderboard-btn" onClick={() => lb && setShowModal(true)} className="flex items-center gap-1.5 text-xs bg-dk-hover border border-dk-border text-dk-text px-3.5 py-2 rounded-xl hover:border-coral hover:text-coral transition-all duration-150 font-medium">Full Leaderboard →</button>
+          <button id="full-leaderboard-btn" onClick={() => lb && setShowModal(true)} className="flex items-center gap-1 text-xs bg-dk-hover border border-dk-border text-dk-text px-2.5 lg:px-3.5 py-1.5 lg:py-2 rounded-xl hover:border-coral hover:text-coral transition-all duration-150 font-medium whitespace-nowrap">
+            <span className="hidden lg:inline">Full </span>Leaderboard →
+          </button>
         </div>
       </div>
       {showModal && lb && <FullLeaderboardModal lb={lb} user={user} onClose={() => setShowModal(false)} />}
