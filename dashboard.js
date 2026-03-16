@@ -765,8 +765,10 @@ function StickyRankBar({ classes, user }) {
 function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp, onLogout, earned, onNavClick, onStartCatchup, onToggleTheme, currentTheme }) {
   const classes = classesProp || CLASSES;
   return (
-    <div className="flex bg-dk-base min-h-screen font-sans text-dk-text antialiased">
-      <Sidebar user={user} onLogout={onLogout} onNavClick={onNavClick} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
+    <div className="flex min-h-screen bg-dk-base font-sans text-dk-text antialiased">
+      <div className="hidden lg:block">
+        <Sidebar user={user} onLogout={onLogout} onNavClick={onNavClick} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
+      </div>
       <MainContent onStartCheckpoint={onStartCheckpoint} classes={classes} userName={user && user.name} user={user} earned={earned} onStartCatchup={onStartCatchup} />
       <RightPanel onStartExam={onStartExam} onStartCheckpoint={onStartCheckpoint} onStartCatchup={onStartCatchup} classes={classes} />
       <StickyRankBar classes={classes} user={user} />
