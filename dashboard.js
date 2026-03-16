@@ -769,7 +769,7 @@ function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp,
   const classes = classesProp || CLASSES;
   return (
     <div className="flex min-h-screen bg-dk-base font-sans text-dk-text antialiased">
-      <div className="hidden lg:block">
+      <div className="hidden">
         <Sidebar user={user} onLogout={onLogout} onNavClick={onNavClick} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
       </div>
       <MainContent onStartCheckpoint={onStartCheckpoint} classes={classes} userName={user && user.name} user={user} earned={earned} onStartCatchup={onStartCatchup} />

@@ -912,6 +912,7 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
   /* ── SESSION ── */
   if (phase === 'session') {
     const q = questions[currentQ];
+    if (!q) return null;
     const isRevealed = !!revealed[currentQ];
     const chosen = userAnswers[currentQ];
     const isLast = currentQ === questions.length - 1;
@@ -1647,33 +1648,26 @@ function App() {
 
   /* ── Dashboard ── */
   return (
-    <Dashboard
-      user={userProfile}
-      classes={enrichedClasses}
-      onStartExam={() => {
-        if (!enrichedClasses) return;
-        for (const cls of enrichedClasses) {
-          const cp = (cls.checkpoints || []).find(c => getCheckpointStatus(c) === 'available');
-          if (cp) { startCheckpointExam(cls.id, cp.id); return; }
-        }
-      }}
-      onStartCheckpoint={startCheckpointExam}
-      onStartCatchup={startCatchupExam}
-      earned={earned}
-      onToggleTheme={toggleTheme}
-      currentTheme={theme}
-      onNavClick={(id, tab) => {
-        if (tab) setProfileTab(tab);
-        if (id === 'profile' || id === 'user-profile') { setView('user-profile'); return; }
-        if (id === 'leaderboard') { setView('leaderboard'); return; }
-        if (id === 'exams') { setView('exams'); return; }
-        if (id === 'season') { setView('season'); return; }
-        if (id === 'quizzes' || id === 'drills') setView('self-study');
-        if (id === 'exercises') { setCommunityView('bank'); setView('community-bank'); }
-        if (id === 'achievements') { setTimeout(() => { const el = document.getElementById('achievements-card'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }, 100); }
-      }}
-      onLogout={() => { clearUser(); setUserProfile(null); setProgress({}); setView('landing'); }}
-    />
+    <AppShell {...shellProps} currentView="dashboard">
+      <Dashboard
+        user={userProfile}
+        classes={enrichedClasses}
+        onStartExam={() => {
+          if (!enrichedClasses) return;
+          for (const cls of enrichedClasses) {
+            const cp = (cls.checkpoints || []).find(c => getCheckpointStatus(c) === 'available');
+            if (cp) { startCheckpointExam(cls.id, cp.id); return; }
+          }
+        }}
+        onStartCheckpoint={startCheckpointExam}
+        onStartCatchup={startCatchupExam}
+        earned={earned}
+        onToggleTheme={toggleTheme}
+        currentTheme={theme}
+        onNavClick={shellProps.onNavClick}
+        onLogout={shellProps.onLogout}
+      />
+    </AppShell>
   );
 }
 
