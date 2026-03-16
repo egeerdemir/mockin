@@ -299,9 +299,9 @@ function SeasonPage({ user, classes, progress, onBack, onStartCheckpoint, onStar
                     const handleClick = isClickable
                       ? () => {
                           if (s === 'available' && typeof onStartCheckpoint === 'function') {
-                            onStartCheckpoint({ classId: cls.id, cpId: cp.id });
+                            onStartCheckpoint(cls.id, cp.id);
                           } else if (s === 'weak' && typeof onStartCatchup === 'function') {
-                            onStartCatchup({ classId: cls.id, cpId: cp.id });
+                            onStartCatchup(cls.id, cp.id);
                           }
                         }
                       : undefined;

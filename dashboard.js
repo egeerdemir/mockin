@@ -505,7 +505,7 @@ function Sidebar({ onNavClick, user, onLogout, onToggleTheme, currentTheme, acti
           <Divider />
         </div>
         {SELF_STUDY_ITEMS.map(tool => (
-          <button key={tool.id} id={`study-${tool.id}`} onClick={() => handleClick(tool.id)} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-dk-muted hover:text-dk-text hover:bg-dk-hover transition-all duration-150 text-left">
+          <button key={tool.id} id={`study-${tool.id}`} onClick={() => { setActiveId(tool.id); if (onNavClick) onNavClick(tool.id); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-dk-muted hover:text-dk-text hover:bg-dk-hover transition-all duration-150 text-left">
             <span className="text-base leading-none w-4 flex-shrink-0 text-center">{tool.icon}</span>{tool.label}
           </button>
         ))}

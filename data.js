@@ -101,9 +101,9 @@ const LEADERBOARD_METM = [
 ];
 
 const UPCOMING_EXAMS = [
-  { code: 'METM W26',   title: 'Checkpoint 5', date: 'Mar 14', daysLeft: 4,  type: 'mock' },
-  { code: 'THERMO W26', title: 'Checkpoint 4', date: 'Mar 16', daysLeft: 6,  type: 'mock' },
-  { code: 'MPHY W26',   title: 'Checkpoint 3', date: 'Mar 21', daysLeft: 11, type: 'mock' },
+  { code: 'METM W26',   title: 'Checkpoint 5', date: 'Mar 28', daysLeft: 11, type: 'mock' },
+  { code: 'THERMO W26', title: 'Checkpoint 4', date: 'Apr 4',  daysLeft: 18, type: 'mock' },
+  { code: 'MPHY W26',   title: 'Checkpoint 3', date: 'Apr 11', daysLeft: 25, type: 'mock' },
 ];
 
 const NAV_ITEMS = [

@@ -184,7 +184,7 @@ function AuthPage({ mode, onComplete, onSwitch }) {
     ev.preventDefault();
     const e = validate();
     if (Object.keys(e).length) { setErrors(e); return; }
-    onComplete({ name: isSignup ? name.trim() : (email.split('@')[0]), email: email.trim() });
+    onComplete({ name: isSignup ? name.trim() : (email.split('@')[0]), email: email.trim(), isLogin: !isSignup });
   };
 
   return (

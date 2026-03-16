@@ -1655,7 +1655,7 @@ function App() {
   if (view === 'login') return (
     <AuthPage
       mode="login"
-      onComplete={u => { mergeProfile(u); setView('profile'); }}
+      onComplete={u => { mergeProfile(u); setView('dashboard'); }}
       onSwitch={() => setView('signup')}
     />
   );
@@ -1720,6 +1720,7 @@ function App() {
     earned,
     onNavClick: (id, tab) => {
       if (tab) setProfileTab(tab);
+      if (id !== 'exercises') setCommunityView('list');
       if (id === 'profile' || id === 'user-profile') { setView('user-profile'); return; }
       if (id === 'leaderboard') { setView('leaderboard'); return; }
       if (id === 'exams') { setView('exams'); return; }

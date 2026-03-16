@@ -108,6 +108,10 @@
     ::-webkit-scrollbar-thumb:hover { background: #3A3A46; }
     @keyframes fill-bar { from { width: 0 } to { width: var(--bar-w, 100%) } }
     .fill-bar { animation: fill-bar 0.8s cubic-bezier(.22,.68,0,1.2) forwards; }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
     html[data-theme="light"] {
       --dk-bg: #f2eef9;
