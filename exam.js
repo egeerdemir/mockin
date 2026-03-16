@@ -1284,38 +1284,45 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
 ══════════════════════════════════════════════ */
 function AppShell({ user, earned, onNavClick, onLogout, onToggleTheme, currentTheme, currentView, children }) {
   const [sidebarOpen, setSidebarOpen] = useS(false);
+  const close = () => setSidebarOpen(false);
   return (
-    <div className="flex bg-dk-base min-h-screen font-sans text-dk-text antialiased">
-      {/* Mobile backdrop */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      {/* Sidebar — fixed overlay on mobile, static on desktop */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 lg:static lg:translate-x-0 lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar
-          user={user}
-          activeItem={currentView}
-          onNavClick={(id, tab) => { setSidebarOpen(false); onNavClick && onNavClick(id, tab); }}
-          onLogout={onLogout}
-          onToggleTheme={onToggleTheme}
-          currentTheme={currentTheme}
-        />
+    <div className="bg-dk-base min-h-screen font-sans text-dk-text antialiased">
+      {/* Desktop: sidebar in normal flow */}
+      <div className="hidden lg:flex min-h-screen">
+        <Sidebar user={user} activeItem={currentView} onNavClick={onNavClick} onLogout={onLogout} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
+        <div className="flex-1 min-w-0">{children}</div>
       </div>
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Mobile top bar with hamburger */}
-        <div className="lg:hidden flex items-center h-12 px-4 bg-dk-surface border-b border-dk-border flex-shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="text-dk-text bg-dk-surface p-1.5 rounded-lg hover:bg-dk-hover transition-colors text-xl leading-none"
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
+
+      {/* Mobile: full-screen content + hamburger FAB + slide-in drawer */}
+      <div className="lg:hidden min-h-screen">
+        {/* Hamburger FAB — always visible top-left */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-coral text-white shadow-lg text-lg"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+
+        {/* Content */}
+        <div className="pt-16 min-h-screen">{children}</div>
+
+        {/* Backdrop */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 bg-black/60 z-40" onClick={close} />
+        )}
+
+        {/* Slide-in drawer */}
+        <div className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-250 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <Sidebar
+            user={user}
+            activeItem={currentView}
+            onNavClick={(id, tab) => { close(); onNavClick && onNavClick(id, tab); }}
+            onLogout={onLogout}
+            onToggleTheme={onToggleTheme}
+            currentTheme={currentTheme}
+          />
         </div>
-        {children}
       </div>
     </div>
   );
