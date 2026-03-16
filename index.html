@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MockIn</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23ff6b6b'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='white'>M</text></svg>">
+  <meta name="description" content="MockIn — Community-powered exam preparation. Track your season, compete, lock in together." />
+
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('mockin_theme_v1');
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      } catch(e) {}
+    })();
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN + Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            coral:    '#FF7A7A',
+            'coral-dim': '#cc5f5f',
+            mint:     '#6ED3B1',
+            lavender: '#B8A6FF',
+            dk: {
+              base:         'var(--dk-bg)',
+              card:         'var(--dk-surface)',
+              raised:       'var(--dk-surface2)',
+              hover:        'var(--dk-hover)',
+              border:       'var(--dk-border)',
+              line:         'var(--dk-line)',
+              muted:        'var(--dk-muted)',
+              dim:          'var(--dk-dim)',
+              text:         'var(--dk-text)',
+              accent:       'var(--dk-accent)',
+              'accent-hover': 'var(--dk-accent-hover)',
+              success:      'var(--dk-success)',
+              warning:      'var(--dk-warning)',
+              danger:       'var(--dk-danger)',
+              overlay:      'var(--dk-overlay)',
+            },
+          },
+          fontFamily: {
+            sans:    ['Inter', 'sans-serif'],
+            heading: ['Satoshi', 'Inter', 'sans-serif'],
+            mono:    ['"JetBrains Mono"', 'monospace'],
+          },
+          fontSize: { '2xs': ['0.65rem', { lineHeight: '1rem' }] },
+          boxShadow: {
+            card:  '0 1px 2px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.35)',
+            pop:   '0 8px 32px rgba(0,0,0,0.5)',
+            glow:  '0 0 0 1px rgba(255,122,122,0.25), 0 0 24px rgba(255,122,122,0.10)',
+          },
+          keyframes: {
+            'fade-in':  { from: { opacity: '0', transform: 'translateY(4px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+            'scale-in': { from: { opacity: '0', transform: 'scale(0.96)' }, to: { opacity: '1', transform: 'scale(1)' } },
+          },
+          animation: {
+            'fade-in':  'fade-in 0.2s ease-out',
+            'scale-in': 'scale-in 0.15s ease-out',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- React 18 -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel Standalone (JSX) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root {
+      --dk-bg:           #151518;
+      --dk-surface:      #1F1F24;
+      --dk-surface2:     #252529;
+      --dk-hover:        #2A2A2F;
+      --dk-border:       #2E2E38;
+      --dk-line:         #3A3A46;
+      --dk-muted:        #8888A0;
+      --dk-dim:          #AEAEC0;
+      --dk-text:         #E8E8EC;
+      --dk-accent:       #FF7A7A;
+      --dk-accent-hover: #cc5f5f;
+      --dk-success:      #6ED3B1;
+      --dk-warning:      #B8A6FF;
+      --dk-danger:       #FF7A7A;
+      --dk-overlay:      rgba(0,0,0,0.6);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: #151518; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2E2E38; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3A3A46; }
+    @keyframes fill-bar { from { width: 0 } to { width: var(--bar-w, 100%) } }
+    .fill-bar { animation: fill-bar 0.8s cubic-bezier(.22,.68,0,1.2) forwards; }
+
+    html[data-theme="light"] {
+      --dk-bg: #f2eef9;
+      --dk-surface: #fdfcff;
+      --dk-surface2: #e8e1f5;
+      --dk-border: #cfc7e6;
+      --dk-text: #2a2440;
+      --dk-muted: #8070a8;
+      --dk-accent: #d95472;
+      --dk-accent-hover: #c0415e;
+      --dk-success: #2e9462;
+      --dk-warning: #b87428;
+      --dk-danger: #cc3f4a;
+      --dk-overlay: rgba(30,20,50,0.45);
+      --dk-hover: #dfd7f0;
+      --dk-line:  #c4bade;
+      --dk-dim:   #5a4d80;
+    }
+    html[data-theme="light"] body { background: #f2eef9; }
+    html[data-theme="light"] ::-webkit-scrollbar-thumb { background: #cfc7e6; }
+    html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #b8b0d0; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- 1. Plain data (no JSX needed) -->
+  <script src="data.js"></script>
+
+  <!-- 2. RWTH course catalog (~2800 courses, auto-generated from CSV) -->
+  <script src="courses.js"></script>
+
+  <!-- 3. User store — localStorage helpers + class assignment -->
+  <script src="user-store.js"></script>
+
+  <!-- 4. Season engine — checkpoint schedule, points, status logic -->
+  <script src="season.js"></script>
+
+  <!-- 5. Leaderboard engine — deterministic peer generation -->
+  <script src="leaderboard.js"></script>
+
+  <!-- 6. Dashboard components (JSX → Babel) -->
+  <script type="text/babel" src="dashboard.js" data-presets="react"></script>
+
+  <!-- 7. Onboarding screens (JSX → Babel) -->
+  <script type="text/babel" src="onboarding.js" data-presets="react"></script>
+
+  <!-- 8. Dashboard Pages (Consolidated: Profile, Leaderboard, Exams, Season) -->
+  <script type="text/babel" src="dashboard-pages.js" data-presets="react"></script>
+
+  <!-- 9. Exam engine + Results + App root (JSX → Babel) -->
+  <script type="text/babel" src="exam.js" data-presets="react"></script>
+</body>
+</html>
