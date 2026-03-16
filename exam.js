@@ -1289,7 +1289,7 @@ function AppShell({ user, earned, onNavClick, onLogout, onToggleTheme, currentTh
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

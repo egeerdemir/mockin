@@ -443,7 +443,7 @@ function Sidebar({ onNavClick, user, onLogout, onToggleTheme, currentTheme, acti
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'EG';
   const dept     = (user && user.department) || 'RWTH Aachen';
   return (
-    <aside className="w-56 bg-dk-card border-r border-dk-border flex flex-col h-screen sticky top-0 flex-shrink-0">
+    <aside className="w-full sm:w-56 bg-dk-card border-r border-dk-border flex flex-col h-screen sticky top-0 flex-shrink-0">
       <div className="px-5 pt-6 pb-5 border-b border-dk-border">
         <h1 className="font-heading font-black text-[1.6rem] leading-none tracking-tight text-dk-text">Mock<span className="text-coral">In</span></h1>
         <p className="text-dk-muted text-2xs mt-1 font-mono">{SEASON.name}</p>
