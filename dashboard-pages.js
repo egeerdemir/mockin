@@ -367,11 +367,11 @@ function ProfilePage({ user, profileTab, onSave, onApiKeySave, onApiKeyRemove, o
             <div className="space-y-6">
               <div>
                 <label className="block text-dk-muted text-xs font-medium mb-1.5">Full Name</label>
-                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-dk-base border border-dk-border rounded-xl px-4 py-2.5 text-dk-text" />
+                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-dk-base border border-dk-border rounded-xl px-4 py-2.5 text-dk-text focus:border-coral focus:ring-1 focus:ring-coral focus:outline-none" />
               </div>
               <div>
                 <label className="block text-dk-muted text-xs font-medium mb-1.5">Department</label>
-                <input type="text" value={department} onChange={e => setDepartment(e.target.value)} className="w-full bg-dk-base border border-dk-border rounded-xl px-4 py-2.5 text-dk-text" />
+                <input type="text" value={department} onChange={e => setDepartment(e.target.value)} className="w-full bg-dk-base border border-dk-border rounded-xl px-4 py-2.5 text-dk-text focus:border-coral focus:ring-1 focus:ring-coral focus:outline-none" />
               </div>
               <button onClick={handleSave} className="bg-dk-accent text-white px-5 py-2.5 rounded-xl text-sm font-bold">{saved ? 'Saved ✓' : 'Save Changes'}</button>
             </div>

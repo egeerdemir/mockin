@@ -167,7 +167,7 @@ function AuthPage({ mode, onComplete, onSwitch }) {
   const validate = () => {
     const e = {};
     if (isSignup && !name.trim()) e.name = 'Name is required';
-    if (!email.includes('@')) e.email = 'Enter a valid email address';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email address';
     if (isSignup) {
       const weakPasswords = ['password','password123','123456','12345678','123456789','qwerty','abc123','letmein','welcome','iloveyou'];
       if (pass.length < 8) e.pass = 'Password must be at least 8 characters';

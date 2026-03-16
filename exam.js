@@ -902,12 +902,12 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
   /* ── HUB ── */
   if (phase === 'hub') return (
     <div className="min-h-screen bg-dk-base font-sans text-dk-text antialiased">
-      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-0 z-40">
+      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-14 lg:top-0 z-40">
         <button onClick={onBack} className="text-dk-muted hover:text-dk-text text-sm font-medium flex items-center gap-1.5 hover:bg-dk-hover px-2.5 py-1.5 rounded-lg transition-colors">← Back</button>
         <div className="h-5 w-px bg-dk-border" />
         <span className="font-heading font-bold text-dk-text text-sm">Self Study</span>
       </header>
-      <div className="max-w-2xl mx-auto px-6 py-12">
+      <div className="max-w-2xl mx-auto px-6 py-12 lg:py-12 pt-6">
         <p className="text-dk-muted text-xs font-mono mb-1 uppercase tracking-widest">Self Study</p>
         <h2 className="font-heading font-bold text-dk-text text-2xl mb-2">Practice at your own pace</h2>
         <p className="text-dk-muted text-sm mb-8">No timer. No pressure. Instant feedback after every answer.</p>

@@ -555,11 +555,18 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
           </p>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto flex-nowrap pb-1">
-          {[{ label:'First Lock-In', icon:'🔒' }, { label:'Mock Slayer', icon:'⚡' }, { label:'Consistency', icon:'🔥' }].map(a => (
-            <span key={a.label} title={a.label} className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-dk-card border border-dk-border text-base hover:border-dk-line transition-colors cursor-default flex-shrink-0">
-              {a.icon}
-            </span>
-          ))}
+          {(earned && earned.length > 0)
+            ? earned.slice(0, 5).map(id => {
+                const a = ACHIEVEMENTS.find(x => x.id === id);
+                if (!a) return null;
+                return (
+                  <span key={id} title={a.name} className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-dk-card border border-dk-border text-base hover:border-dk-line transition-colors cursor-default flex-shrink-0">
+                    {a.icon || (a.name && a.name[0]) || '?'}
+                  </span>
+                );
+              })
+            : <span className="text-dk-muted text-xs font-mono">No badges yet</span>
+          }
         </div>
       </div>
       <SeasonOverview classes={classes} />
