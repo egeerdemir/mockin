@@ -556,8 +556,8 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
         </div>
         <div className="flex items-center gap-2 overflow-x-auto flex-nowrap pb-1">
           {[{ label:'First Lock-In', icon:'🔒' }, { label:'Mock Slayer', icon:'⚡' }, { label:'Consistency', icon:'🔥' }].map(a => (
-            <span key={a.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dk-card border border-dk-border text-xs font-medium text-dk-dim hover:border-dk-line transition-colors cursor-default flex-shrink-0">
-              {a.icon} {a.label}
+            <span key={a.label} title={a.label} className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-dk-card border border-dk-border text-base hover:border-dk-line transition-colors cursor-default flex-shrink-0">
+              {a.icon}
             </span>
           ))}
         </div>
