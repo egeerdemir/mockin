@@ -708,11 +708,126 @@ function getCommunityPool(classId) {
    SELF STUDY
 ══════════════════════════════════════════════ */
 
+/* ── FlashcardSession ── */
+function FlashcardSession({ questions, onExit }) {
+  const [deck, setDeck] = useS(() => [...questions]);
+  const [flipped, setFlipped] = useS(false);
+  const [doneCount, setDoneCount] = useS(0);
+  const total = questions.length;
+
+  if (deck.length === 0) {
+    return (
+      <div className="fixed inset-0 bg-dk-base flex flex-col items-center justify-center z-50 font-sans text-dk-text antialiased px-6">
+        <div className="bg-dk-card border border-dk-border rounded-2xl p-10 max-w-sm w-full text-center shadow-pop">
+          <div className="text-5xl mb-4">🎉</div>
+          <h2 className="font-heading font-bold text-dk-text text-2xl mb-2">All done!</h2>
+          <p className="text-dk-muted text-sm mb-2">You marked <span className="text-mint font-bold">{doneCount}</span> of <span className="font-bold text-dk-text">{total}</span> cards as got it.</p>
+          <button onClick={onExit} className="mt-6 w-full py-3 bg-coral text-dk-base text-sm font-bold rounded-xl hover:opacity-90 transition-opacity shadow-glow">Done</button>
+        </div>
+      </div>
+    );
+  }
+
+  const card = deck[0];
+  const remaining = deck.length;
+
+  const handleGotIt = () => {
+    setDeck(prev => prev.slice(1));
+    setDoneCount(n => n + 1);
+    setFlipped(false);
+  };
+
+  const handleReviewAgain = () => {
+    setDeck(prev => [...prev.slice(1), prev[0]]);
+    setFlipped(false);
+  };
+
+  const correctAnswer = card.options ? card.options[card.correctAnswer] : '';
+  const explanation = card.explanation || null;
+
+  return (
+    <div className="fixed inset-0 bg-dk-base flex flex-col z-50 font-sans text-dk-text antialiased">
+      {/* Header */}
+      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 flex-shrink-0">
+        <span className="font-heading font-bold text-dk-text text-sm">Flashcards</span>
+        <div className="flex-1" />
+        <span className="font-mono text-xs text-dk-muted bg-dk-hover border border-dk-border px-2.5 py-1 rounded-lg">{remaining} left</span>
+        <button onClick={onExit} className="text-dk-muted hover:text-dk-text text-sm font-medium flex items-center gap-1 hover:bg-dk-hover px-2.5 py-1.5 rounded-lg transition-colors">✕ Exit</button>
+      </header>
+
+      {/* Progress bar */}
+      <div className="h-1.5 bg-dk-hover flex-shrink-0">
+        <div className="h-full bg-coral transition-all duration-300" style={{ width: `${Math.round(((total - remaining) / total) * 100)}%` }} />
+      </div>
+
+      {/* Card area */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8" style={{ perspective: '1000px' }}>
+        <p className="text-dk-muted text-xs font-mono mb-6 uppercase tracking-widest">{total - remaining} / {total} completed</p>
+
+        {/* Flip card container */}
+        <div className="w-full max-w-xl" style={{ perspective: '1000px' }}>
+          <div
+            onClick={() => !flipped && setFlipped(true)}
+            style={{
+              position: 'relative',
+              width: '100%',
+              minHeight: '280px',
+              transition: 'transform 0.35s',
+              transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              transformStyle: 'preserve-3d',
+              cursor: flipped ? 'default' : 'pointer',
+            }}
+          >
+            {/* Front face */}
+            <div style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', position: 'absolute', inset: 0 }}
+              className="bg-dk-card border border-dk-border rounded-2xl p-8 flex flex-col items-center justify-center shadow-card">
+              <div className="flex items-center gap-2 mb-4 self-start">
+                <span className="bg-dk-hover border border-dk-border text-dk-muted text-xs px-2.5 py-1 rounded-lg font-medium">{card.topic}</span>
+                {card.difficulty && <span className={`text-xs font-medium capitalize ${{ easy:'text-mint', medium:'text-lavender', hard:'text-coral' }[card.difficulty] || 'text-dk-muted'}`}>{card.difficulty}</span>}
+              </div>
+              <p className="text-dk-text text-lg leading-relaxed font-medium text-center">{card.text}</p>
+              <p className="text-dk-muted text-xs mt-6">Tap to reveal answer</p>
+            </div>
+
+            {/* Back face */}
+            <div style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
+              className="bg-dk-card border border-dk-line rounded-2xl p-8 flex flex-col items-start justify-center shadow-card">
+              <p className="text-dk-muted text-xs font-semibold uppercase tracking-widest mb-3">Correct Answer</p>
+              <p className="text-mint text-lg font-bold leading-snug mb-4">{correctAnswer}</p>
+              {explanation && (
+                <div className="border-t border-dk-border pt-4 w-full">
+                  <p className="text-dk-muted text-xs font-semibold uppercase tracking-widest mb-2">Explanation</p>
+                  <p className="text-dk-dim text-sm leading-relaxed">{explanation}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Action buttons — only shown after flip */}
+        {flipped && (
+          <div className="flex gap-4 mt-8 w-full max-w-xl">
+            <button onClick={handleReviewAgain}
+              className="flex-1 py-3.5 bg-dk-card border border-dk-border rounded-xl text-dk-muted text-sm font-semibold hover:border-dk-line hover:text-dk-text transition-colors">
+              Review again ↺
+            </button>
+            <button onClick={handleGotIt}
+              className="flex-1 py-3.5 bg-mint bg-opacity-15 border border-mint border-opacity-40 rounded-xl text-mint text-sm font-bold hover:bg-opacity-25 transition-colors">
+              Got it ✓
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── SelfStudyPage ── */
 function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
-  /* phase: 'hub' | 'class-select' | 'topic-select' | 'session' | 'summary' */
+  /* phase: 'hub' | 'class-select' | 'topic-select' | 'session' | 'summary' | 'flashcard-class' | 'flashcard-session' */
   const [phase, setPhase] = useS('hub');
   const [mode, setMode]   = useS(null);      /* 'drill' | 'practice' */
+  const [flashcardQuestions, setFlashcardQuestions] = useS([]);
   const [selClass, setSelClass] = useS(null);
   const [selTopic, setSelTopic] = useS(null);
   const [questions, setQuestions] = useS([]);
@@ -773,6 +888,17 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
     setRevealed({});
   };
 
+  const handleStartFlashcards = (cls) => {
+    const bank = (typeof QUESTION_BANKS !== 'undefined' && QUESTION_BANKS[cls.id]) ? QUESTION_BANKS[cls.id] : (typeof EXAM_QUESTIONS !== 'undefined' ? EXAM_QUESTIONS : []);
+    setFlashcardQuestions(shuffle([...bank]));
+    setPhase('flashcard-session');
+  };
+
+  /* ── FLASHCARD SESSION ── */
+  if (phase === 'flashcard-session') {
+    return <FlashcardSession questions={flashcardQuestions} onExit={() => setPhase('hub')} />;
+  }
+
   /* ── HUB ── */
   if (phase === 'hub') return (
     <div className="min-h-screen bg-dk-base font-sans text-dk-text antialiased">
@@ -803,6 +929,17 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
             </div>
           ))}
           <div className="bg-dk-card border border-dk-border rounded-2xl p-6 flex flex-col gap-4 hover:border-dk-line transition-colors shadow-card">
+            <div className="w-10 h-10 bg-dk-hover border border-dk-border rounded-xl flex items-center justify-center text-xl">🃏</div>
+            <div>
+              <h3 className="font-heading font-bold text-dk-text text-base">Flashcards</h3>
+              <p className="text-dk-muted text-xs mt-1">Flip through the full bank · Got it / Review again</p>
+            </div>
+            <button onClick={() => setPhase('flashcard-class')}
+              className="mt-auto w-full py-2.5 bg-coral text-dk-base text-sm font-bold rounded-xl hover:opacity-90 transition-opacity">
+              Start Flashcards →
+            </button>
+          </div>
+          <div className="bg-dk-card border border-dk-border rounded-2xl p-6 flex flex-col gap-4 hover:border-dk-line transition-colors shadow-card">
             <div className="w-10 h-10 bg-dk-hover border border-dk-border rounded-xl flex items-center justify-center text-xl">◉</div>
             <div>
               <h3 className="font-heading font-bold text-dk-text text-base">Community Bank</h3>
@@ -814,6 +951,41 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+
+  /* ── FLASHCARD CLASS SELECT ── */
+  if (phase === 'flashcard-class') return (
+    <div className="min-h-screen bg-dk-base font-sans text-dk-text antialiased">
+      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-0 z-40">
+        <button onClick={() => setPhase('hub')} className="text-dk-muted hover:text-dk-text text-sm font-medium flex items-center gap-1.5 hover:bg-dk-hover px-2.5 py-1.5 rounded-lg transition-colors">← Back</button>
+        <div className="h-5 w-px bg-dk-border" />
+        <span className="font-heading font-bold text-dk-text text-sm">Flashcards</span>
+      </header>
+      <div className="max-w-xl mx-auto px-6 py-8">
+        <p className="text-dk-muted text-xs mb-6">Select a class to study</p>
+        {availableClasses.length === 0 ? (
+          <p className="text-dk-muted text-sm">No question banks available yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {availableClasses.map(cls => {
+              const bank = (typeof QUESTION_BANKS !== 'undefined' && QUESTION_BANKS[cls.id]) ? QUESTION_BANKS[cls.id] : (typeof EXAM_QUESTIONS !== 'undefined' ? EXAM_QUESTIONS : []);
+              return (
+                <button key={cls.id} onClick={() => handleStartFlashcards(cls)}
+                  className="w-full text-left bg-dk-card border border-dk-border rounded-2xl px-5 py-4 hover:border-dk-line transition-colors shadow-card">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-mono text-sm font-bold text-coral">{cls.code}</span>
+                      <p className="text-dk-muted text-xs mt-0.5 truncate max-w-xs">{cls.fullName}</p>
+                    </div>
+                    <span className="text-dk-muted text-xs font-mono flex-shrink-0 ml-4">{bank.length} cards</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
