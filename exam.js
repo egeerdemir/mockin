@@ -211,6 +211,7 @@ function ExamPage({ exam, questions, onComplete, onExit }) {
   const [timeLeft, setTimeLeft] = useS(exam.duration);
   const [showModal, setShowModal] = useS(false);
   const [showNavPanel, setShowNavPanel] = useS(false);
+  const [showExitConfirm, setShowExitConfirm] = useS(false);
   const submitted = useR(false);
   const doSubmitRef = useR(null);
 
@@ -226,7 +227,25 @@ function ExamPage({ exam, questions, onComplete, onExit }) {
 
   return (
     <div className="flex flex-col h-screen bg-dk-base font-sans text-dk-text antialiased">
-      <ExamHeader exam={exam} currentQ={currentQ} total={questions.length} timeLeft={timeLeft} onExit={onExit} />
+      <ExamHeader exam={exam} currentQ={currentQ} total={questions.length} timeLeft={timeLeft} onExit={() => setShowExitConfirm(true)} />
+      {showExitConfirm && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
+          <div className="bg-dk-card border border-dk-border rounded-2xl p-6 shadow-pop w-full max-w-sm animate-scale-in">
+            <h3 className="font-heading font-bold text-dk-text text-lg mb-2">Exit exam?</h3>
+            <p className="text-dk-muted text-sm mb-6">Your progress will be lost and the exam will not be submitted.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="flex-1 py-2.5 bg-dk-hover border border-dk-border text-dk-dim text-sm font-medium rounded-xl hover:text-dk-text transition-colors"
+              >Keep going</button>
+              <button
+                onClick={onExit}
+                className="flex-1 py-2.5 text-coral border border-coral border-opacity-40 text-sm font-bold rounded-xl hover:bg-coral hover:bg-opacity-10 transition-colors"
+              >Exit</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-7">
           {/* Mobile Questions toggle button */}

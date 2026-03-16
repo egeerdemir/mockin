@@ -169,7 +169,7 @@ function AuthPage({ mode, onComplete, onSwitch }) {
     if (isSignup && !name.trim()) e.name = 'Name is required';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email address';
     if (isSignup) {
-      const weakPasswords = ['password','password123','123456','12345678','123456789','qwerty','abc123','letmein','welcome','iloveyou'];
+      const weakPasswords = ['password','password1','password123','123456','12345678','123456789','qwerty','qwerty123','abc123','letmein','welcome','iloveyou','00000000','11111111'];
       if (pass.length < 8) e.pass = 'Password must be at least 8 characters';
       else if (!/[0-9]/.test(pass) && !/[^a-zA-Z0-9]/.test(pass)) e.pass = 'Add a number or special character';
       else if (weakPasswords.includes(pass.toLowerCase())) e.pass = 'This password is too common — choose something unique';

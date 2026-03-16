@@ -35,7 +35,9 @@ function Divider() { return <div className="h-px bg-dk-border my-1" />; }
 
 /* ── CheckpointDot ── */
 function CheckpointDot({ cp, index, onStart }) {
-  const [show, setShow] = _us(false);
+  const [hovered, setHovered] = _us(false);
+  const [tapped, setTapped] = _us(false);
+  const tapTimerRef = React.useRef(null);
   /* Support both new schema (unlockDate) and legacy demo schema (status string) */
   const status = cp.unlockDate !== undefined ? getCheckpointStatus(cp) : (cp.status || 'upcoming');
   const { dot, icon, ic } = statusStyle(status);
@@ -45,12 +47,25 @@ function CheckpointDot({ cp, index, onStart }) {
   }[status] ?? 'text-dk-dim';
   const dateStr = cp.unlockDate ? fmtDate(cp.unlockDate) : (cp.date || '—');
   const isAvailable = status === 'available';
+  const show = hovered || tapped;
+
+  React.useEffect(() => {
+    return () => { if (tapTimerRef.current) clearTimeout(tapTimerRef.current); };
+  }, []);
+
+  const handleTap = (e) => {
+    if (isAvailable && onStart) { onStart(cp.id); return; }
+    e.stopPropagation();
+    if (tapped) { setTapped(false); clearTimeout(tapTimerRef.current); return; }
+    setTapped(true);
+    tapTimerRef.current = setTimeout(() => setTapped(false), 2000);
+  };
 
   return (
     <div className="relative flex flex-col items-center"
-      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <div
-        onClick={isAvailable && onStart ? () => onStart(cp.id) : undefined}
+        onClick={handleTap}
         className={`w-7 h-7 rounded-full ${dot} flex items-center justify-center transition-transform duration-150 hover:scale-110 select-none ${isAvailable ? 'cursor-pointer' : 'cursor-default'}`}
       >
         {icon
