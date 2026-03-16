@@ -416,7 +416,7 @@ function AchievementsCard({ earned }) {
         <span className="text-dk-muted text-xs font-mono">{earnedCount} / {ACHIEVEMENTS.length} earned</span>
       </div>
       <div className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card">
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {ACHIEVEMENTS.map(a => {
             const isEarned = earnedSet.has(a.id);
             return (
@@ -558,6 +558,37 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
         </div>
       </div>
       <SeasonOverview classes={classes} />
+      {/* Mobile-only upcoming exams compact block */}
+      <div className="lg:hidden mb-5">
+        <p className="text-dk-muted text-2xs font-semibold uppercase tracking-widest mb-2">Upcoming Exams</p>
+        <div className="space-y-2">
+          {((() => {
+            const now = new Date();
+            const upcomingReal = classes
+              .filter(c => c.examDate)
+              .map(c => {
+                const d = new Date(c.examDate);
+                const daysLeft = Math.ceil((d - now) / 86400000);
+                const date = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+                return { code: c.code, title: 'Final Exam', date, daysLeft };
+              })
+              .filter(e => e.daysLeft >= 0)
+              .sort((a, b) => a.daysLeft - b.daysLeft);
+            return upcomingReal.length > 0 ? upcomingReal : UPCOMING_EXAMS;
+          })()).slice(0, 3).map((ex, i) => (
+            <div key={i} className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-dk-card border border-dk-border rounded-xl">
+              <div className="min-w-0">
+                <span className="font-mono text-2xs text-coral font-semibold">{ex.code}</span>
+                <p className="text-dk-text text-xs font-medium truncate">{ex.title}</p>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <p className="font-mono text-xs font-bold text-dk-text">{ex.date}</p>
+                <span className={`text-2xs font-mono ${ex.daysLeft<=5?'text-coral':'text-dk-muted'}`}>in {ex.daysLeft}d</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-heading font-semibold text-dk-text text-base">Active Classes</h2>
         <span className="text-2xs font-mono text-dk-muted bg-dk-card border border-dk-border px-2.5 py-1 rounded-lg">{classes.length} classes</span>
@@ -590,7 +621,7 @@ function RightPanel({ onStartExam, onStartCheckpoint, onStartCatchup, classes })
   const examList = upcomingReal.length > 0 ? upcomingReal : UPCOMING_EXAMS;
 
   return (
-    <aside className="w-72 border-l border-dk-border flex flex-col h-screen sticky top-0 overflow-y-auto flex-shrink-0 bg-dk-base">
+    <aside className="hidden lg:flex w-72 border-l border-dk-border flex-col h-screen sticky top-0 overflow-y-auto flex-shrink-0 bg-dk-base">
       <div className="px-5 pt-6 pb-3 border-b border-dk-border">
         <p className="text-dk-muted text-2xs font-semibold uppercase tracking-widest mb-0.5">Upcoming</p>
         <h2 className="font-heading font-bold text-dk-text text-base">Exams & Checkpoints</h2>
@@ -700,7 +731,7 @@ function StickyRankBar({ classes, user }) {
   const tagV   = topPct !== null ? (topPct <= 10 ? 'mint' : topPct <= 25 ? 'lavender' : 'coral') : 'default';
   return (
     <>
-      <div id="sticky-rank-bar" className="fixed bottom-0 left-56 right-72 bg-dk-card border-t border-dk-border shadow-pop px-6 py-3 flex items-center justify-between z-50">
+      <div id="sticky-rank-bar" className="fixed bottom-0 left-0 right-0 lg:left-56 lg:right-72 bg-dk-card border-t border-dk-border shadow-pop px-6 py-3 flex items-center justify-between z-50">
         <div className="flex items-center gap-4">
           <Avatar initials={initials} color="bg-coral" size="sm" />
           <div className="flex items-center gap-3">

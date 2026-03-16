@@ -210,6 +210,7 @@ function ExamPage({ exam, questions, onComplete, onExit }) {
   const [flagged, setFlagged] = useS(new Set());
   const [timeLeft, setTimeLeft] = useS(exam.duration);
   const [showModal, setShowModal] = useS(false);
+  const [showNavPanel, setShowNavPanel] = useS(false);
   const submitted = useR(false);
   const doSubmitRef = useR(null);
 
@@ -227,7 +228,21 @@ function ExamPage({ exam, questions, onComplete, onExit }) {
     <div className="flex flex-col h-screen bg-dk-base font-sans text-dk-text antialiased">
       <ExamHeader exam={exam} currentQ={currentQ} total={questions.length} timeLeft={timeLeft} onExit={onExit} />
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto px-8 py-7">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-7">
+          {/* Mobile Questions toggle button */}
+          <div className="lg:hidden mb-4">
+            <button
+              onClick={() => setShowNavPanel(v => !v)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-dk-border text-dk-muted text-xs font-medium hover:border-dk-line hover:text-dk-text transition-colors"
+            >
+              ☰ Questions ({Object.keys(answers).length}/{questions.length})
+            </button>
+            {showNavPanel && (
+              <div className="mt-3 bg-dk-card border border-dk-border rounded-xl p-4">
+                <QuestionNavigator questions={questions} answers={answers} flagged={flagged} currentQ={currentQ} onJump={(idx) => { setCurrentQ(idx); setShowNavPanel(false); }} />
+              </div>
+            )}
+          </div>
           <QuestionCard
             question={questions[currentQ]}
             currentAnswer={answers[questions[currentQ].id]}
@@ -236,7 +251,7 @@ function ExamPage({ exam, questions, onComplete, onExit }) {
             onFlag={toggleFlag}
           />
         </div>
-        <aside className="w-64 border-l border-dk-border bg-dk-card overflow-y-auto px-4 py-5 flex-shrink-0">
+        <aside className="hidden lg:flex w-64 border-l border-dk-border bg-dk-card overflow-y-auto px-4 py-5 flex-shrink-0 flex-col">
           <p className="text-dk-muted text-2xs font-semibold uppercase tracking-widest mb-4">Navigator</p>
           <QuestionNavigator questions={questions} answers={answers} flagged={flagged} currentQ={currentQ} onJump={setCurrentQ} />
         </aside>
@@ -552,10 +567,10 @@ function ReviewPage({ results, exam, onBack }) {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto px-8 py-7">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-7">
           <ReviewQuestionCard item={item} index={currentQ} total={total} />
         </div>
-        <aside className="w-64 border-l border-dk-border bg-dk-card overflow-y-auto px-4 py-5 flex-shrink-0">
+        <aside className="hidden lg:flex flex-col w-64 border-l border-dk-border bg-dk-card overflow-y-auto px-4 py-5 flex-shrink-0">
           <p className="text-dk-muted text-2xs font-semibold uppercase tracking-widest mb-4">Navigator</p>
           <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-2xs text-dk-muted mb-4">
             <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-mint inline-block" />Correct</span>
@@ -1268,17 +1283,38 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
    APP SHELL — persistent sidebar layout for authenticated sub-pages
 ══════════════════════════════════════════════ */
 function AppShell({ user, earned, onNavClick, onLogout, onToggleTheme, currentTheme, currentView, children }) {
+  const [sidebarOpen, setSidebarOpen] = useS(false);
   return (
     <div className="flex bg-dk-base min-h-screen font-sans text-dk-text antialiased">
-      <Sidebar
-        user={user}
-        activeItem={currentView}
-        onNavClick={onNavClick}
-        onLogout={onLogout}
-        onToggleTheme={onToggleTheme}
-        currentTheme={currentTheme}
-      />
-      <div className="flex-1 min-w-0">
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      {/* Sidebar — fixed overlay on mobile, static on desktop */}
+      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 lg:static lg:translate-x-0 lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar
+          user={user}
+          activeItem={currentView}
+          onNavClick={(id, tab) => { setSidebarOpen(false); onNavClick && onNavClick(id, tab); }}
+          onLogout={onLogout}
+          onToggleTheme={onToggleTheme}
+          currentTheme={currentTheme}
+        />
+      </div>
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Mobile top bar with hamburger */}
+        <div className="lg:hidden flex items-center h-12 px-4 bg-dk-surface border-b border-dk-border flex-shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-dk-text bg-dk-surface p-1.5 rounded-lg hover:bg-dk-hover transition-colors text-xl leading-none"
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+        </div>
         {children}
       </div>
     </div>

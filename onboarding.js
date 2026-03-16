@@ -97,10 +97,10 @@ function LandingPage({ onContinue }) {
           </span>
         </div>
 
-        <h2 className="font-heading font-black text-5xl md:text-6xl leading-tight text-dk-text max-w-xl mb-4">
+        <h2 className="font-heading font-black text-3xl sm:text-5xl md:text-6xl leading-tight text-dk-text max-w-xl mb-4">
           We don't lock<br/>people in.
         </h2>
-        <p className="font-heading font-bold text-5xl md:text-6xl leading-tight text-coral max-w-xl mb-8">
+        <p className="font-heading font-bold text-3xl sm:text-5xl md:text-6xl leading-tight text-coral max-w-xl mb-8">
           People lock in.
         </p>
 
@@ -412,7 +412,7 @@ function CourseSelectPage({ onComplete, department }) {
         )}
 
         {/* Results list */}
-        <div className="bg-dk-card border border-dk-border rounded-xl overflow-hidden mb-5" style={{ maxHeight: '360px', overflowY: 'auto' }}>
+        <div className="bg-dk-card border border-dk-border rounded-xl overflow-hidden mb-5" style={{ maxHeight: '240px', overflowY: 'auto' }}>
           {!debouncedQ.trim() ? (
             <div className="flex flex-col items-center justify-center py-12 text-center px-6">
               <span className="text-3xl mb-3">🎓</span>

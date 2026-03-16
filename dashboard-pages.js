@@ -91,44 +91,46 @@ function SeasonSummaryCard({ assignedClasses, rankMap }) {
   return (
     <div className="bg-dk-surface border border-dk-border rounded-xl p-4 mb-4">
       <h2 className="font-heading font-semibold text-dk-text text-sm mb-3">Season Standings</h2>
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="text-dk-muted font-medium border-b border-dk-border">
-            <th className="text-left pb-2">Class</th>
-            <th className="text-center pb-2">Rank</th>
-            <th className="text-right pb-2">Points</th>
-            <th className="text-right pb-2">Progress</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-dk-border">
-          {assignedClasses.map(cls => {
-            const rd = rankMap[cls.id];
-            const rank = rd ? rd.userRank : '—';
-            const points = rd ? rd.userPoints : 0;
-            const checkpoints = rd ? rd.userCheckpoints : 0;
-            const rankBadge = typeof rank === 'number' && rank <= 3
-              ? 'bg-yellow-400 text-white'
-              : typeof rank === 'number' && rank <= 10
-                ? 'bg-dk-dim text-white'
-                : 'bg-dk-surface2 text-dk-muted';
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-max">
+          <thead>
+            <tr className="text-dk-muted font-medium border-b border-dk-border">
+              <th className="text-left pb-2">Class</th>
+              <th className="text-center pb-2">Rank</th>
+              <th className="text-right pb-2">Points</th>
+              <th className="text-right pb-2">Progress</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-dk-border">
+            {assignedClasses.map(cls => {
+              const rd = rankMap[cls.id];
+              const rank = rd ? rd.userRank : '—';
+              const points = rd ? rd.userPoints : 0;
+              const checkpoints = rd ? rd.userCheckpoints : 0;
+              const rankBadge = typeof rank === 'number' && rank <= 3
+                ? 'bg-yellow-400 text-white'
+                : typeof rank === 'number' && rank <= 10
+                  ? 'bg-dk-dim text-white'
+                  : 'bg-dk-surface2 text-dk-muted';
 
-            return (
-              <tr key={cls.id} className="text-dk-text">
-                <td className="py-2 pr-2">
-                  <span className="font-mono text-dk-text">{cls.code}</span>
-                </td>
-                <td className="py-2 text-center">
-                  <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-2xs font-bold ${rankBadge}`}>
-                    #{rank}
-                  </span>
-                </td>
-                <td className="py-2 text-right font-mono">{points}</td>
-                <td className="py-2 text-right text-dk-muted">{checkpoints}/6 ✓</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <tr key={cls.id} className="text-dk-text">
+                  <td className="py-2 pr-2">
+                    <span className="font-mono text-dk-text">{cls.code}</span>
+                  </td>
+                  <td className="py-2 text-center">
+                    <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-md text-2xs font-bold ${rankBadge}`}>
+                      #{rank}
+                    </span>
+                  </td>
+                  <td className="py-2 text-right font-mono">{points}</td>
+                  <td className="py-2 text-right text-dk-muted">{checkpoints}/6 ✓</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
