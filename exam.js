@@ -911,7 +911,7 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
         <p className="text-dk-muted text-xs font-mono mb-1 uppercase tracking-widest">Self Study</p>
         <h2 className="font-heading font-bold text-dk-text text-2xl mb-2">Practice at your own pace</h2>
         <p className="text-dk-muted text-sm mb-8">No timer. No pressure. Instant feedback after every answer.</p>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { id:'drill',    icon:'✎', label:'Topic Drill',    sub:'5 questions · pick a topic · instant feedback' },
             { id:'practice', icon:'≡', label:'Free Practice',  sub:'15 questions · full class bank · no timer'     },
