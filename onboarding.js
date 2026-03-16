@@ -168,7 +168,14 @@ function AuthPage({ mode, onComplete, onSwitch }) {
     const e = {};
     if (isSignup && !name.trim()) e.name = 'Name is required';
     if (!email.includes('@')) e.email = 'Enter a valid email address';
-    if (pass.length < 6) e.pass = 'Password must be at least 6 characters';
+    if (isSignup) {
+      const weakPasswords = ['password','password123','123456','12345678','123456789','qwerty','abc123','letmein','welcome','iloveyou'];
+      if (pass.length < 8) e.pass = 'Password must be at least 8 characters';
+      else if (!/[0-9]/.test(pass) && !/[^a-zA-Z0-9]/.test(pass)) e.pass = 'Add a number or special character';
+      else if (weakPasswords.includes(pass.toLowerCase())) e.pass = 'This password is too common — choose something unique';
+    } else {
+      if (pass.length < 1) e.pass = 'Enter your password';
+    }
     if (isSignup && pass !== pass2) e.pass2 = 'Passwords do not match';
     return e;
   };
@@ -215,8 +222,9 @@ function AuthPage({ mode, onComplete, onSwitch }) {
             type="password"
             value={pass}
             onChange={setPass}
-            placeholder="Min. 6 characters"
+            placeholder="Min. 8 characters"
             error={errors.pass}
+            hint={isSignup ? 'At least 8 characters with a number or special character' : undefined}
           />
           {isSignup && (
             <InputField
