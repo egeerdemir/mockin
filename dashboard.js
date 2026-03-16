@@ -547,12 +547,15 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
   return (
     <main className="flex-1 min-w-0 overflow-y-auto px-6 pt-6 pb-20">
       <div className="flex items-start justify-between mb-6">
-        <div>
+        <div className="pt-2 lg:pt-0">
           <p className="text-dk-muted text-xs font-mono mb-0.5 uppercase tracking-widest">Dashboard</p>
           <h1 className="font-heading font-bold text-2xl text-dk-text leading-tight">{greeting}, {userName || 'there'} 👋</h1>
-          <p className="text-dk-muted text-sm mt-0.5">Week {getCurrentSeasonWeek()} of {SEASON.totalWeeks} · {classes.length} active classes</p>
+          <p className="text-dk-muted text-sm mt-0.5 flex flex-col lg:flex-row lg:gap-2">
+            <span className="whitespace-nowrap">Week {getCurrentSeasonWeek()} of {SEASON.totalWeeks}</span>
+            <span className="whitespace-nowrap text-xs lg:text-sm">{classes.length} active classes</span>
+          </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+        <div className="flex items-center gap-2 flex-shrink-0 overflow-x-auto flex-nowrap pb-1">
           {[{ label:'First Lock-In', icon:'🔒' }, { label:'Mock Slayer', icon:'⚡' }, { label:'Consistency', icon:'🔥' }].map(a => (
             <span key={a.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-dk-card border border-dk-border text-xs font-medium text-dk-dim hover:border-dk-line transition-colors cursor-default">
               {a.icon} {a.label}
