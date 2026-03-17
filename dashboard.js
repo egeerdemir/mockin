@@ -19,6 +19,43 @@ const statusLabel = s => ({
 const calcPct = (rank, total) => Math.round((rank / total) * 100);
 const calcPts = (score, ects) => score * ects;
 
+/* ── Study Streak ── */
+function getStudyStreak() {
+  try {
+    const raw = localStorage.getItem('mockin_study_dates');
+    const dates = raw ? JSON.parse(raw) : [];
+    if (!dates.length) return 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let streak = 0;
+    let check = new Date(today);
+    while (true) {
+      const iso = check.toISOString().slice(0, 10);
+      if (dates.includes(iso)) {
+        streak++;
+        check.setDate(check.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function recordStudyDay() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const raw = localStorage.getItem('mockin_study_dates');
+    const dates = raw ? JSON.parse(raw) : [];
+    if (!dates.includes(today)) {
+      dates.push(today);
+      localStorage.setItem('mockin_study_dates', JSON.stringify(dates));
+    }
+  } catch (e) {}
+}
+
 /* ── Avatar ── */
 function Avatar({ initials, color='bg-coral', size='md' }) {
   const sz = { xs:'w-6 h-6 text-2xs', sm:'w-7 h-7 text-xs', md:'w-8 h-8 text-xs', lg:'w-10 h-10 text-sm' }[size];
@@ -710,7 +747,7 @@ function RightPanel({ onStartExam, onStartCheckpoint, onStartCatchup, classes })
       </div>
       <div className="px-4 pb-4 grid grid-cols-2 gap-2">
         {[
-          { label:'Study Streak', value:'12d', icon:'🔥', color:'text-coral' },
+          { label:'Study Streak', value:`${getStudyStreak()}d`, icon:'🔥', color:'text-coral' },
           { label:'Exams Done',   value: classes.reduce((s,c) => s + (c.checkpoints ? c.checkpoints.filter(p => p.completed).length : 0), 0).toString(), icon:'📝', color:'text-mint' },
           { label:'Avg Score',    value: (() => { const allScores = classes.flatMap(c => (c.checkpoints || []).filter(p => p.score !== null).map(p => p.score)); return allScores.length ? Math.round(allScores.reduce((a,b)=>a+b,0)/allScores.length)+'%' : '—'; })(), icon:'📊', color:'text-lavender' },
           { label:'Total Pts',    value: classes.reduce((s,c) => s + (c.totalPoints !== undefined ? c.totalPoints : calcPts(c.userScore,c.ects)), 0).toLocaleString(), icon:'⭐', color:'text-yellow-400' },
@@ -740,18 +777,24 @@ function StickyRankBar({ classes, user }) {
   const totalPts = classes.reduce((s, c) => s + (c.totalPoints !== undefined ? c.totalPoints : calcPts(c.userScore, c.ects)), 0);
   const name     = (user && user.name) || 'You';
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'EG';
-  /* Compute lb from first class for rank display and modal */
-  const primary = classes[0];
-  const completedCount = primary && primary.checkpoints
-    ? primary.checkpoints.filter(c => {
-        const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
-        return s === 'done' || s === 'weak';
-      }).length
-    : 0;
-  const userTotalPts = primary
-    ? (primary.totalPoints !== undefined ? primary.totalPoints : calcPts(primary.userScore, primary.ects))
-    : 0;
-  const lb     = primary ? generateLeaderboard(primary.id, userTotalPts, user && user.name, completedCount) : null;
+  /* Compute lb from the class where the user has the BEST (lowest) rank */
+  const lbPerClass = classes.map(cls => {
+    const completed = cls.checkpoints
+      ? cls.checkpoints.filter(c => {
+          const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
+          return s === 'done' || s === 'weak';
+        }).length
+      : 0;
+    const pts = cls.totalPoints !== undefined ? cls.totalPoints : calcPts(cls.userScore, cls.ects);
+    return generateLeaderboard(cls.id, pts, user && user.name, completed);
+  });
+  const bestLb = lbPerClass.reduce((best, cur) => {
+    if (!best) return cur;
+    if (!cur || cur.userRank == null) return best;
+    if (best.userRank == null) return cur;
+    return cur.userRank < best.userRank ? cur : best;
+  }, null);
+  const lb     = bestLb || null;
   const rank   = lb ? lb.userRank : null;
   const total  = lb ? lb.total : null;
   const topPct = rank && total ? Math.round((rank / total) * 100) : null;
@@ -801,6 +844,7 @@ function StickyRankBar({ classes, user }) {
 /* ── Dashboard (wrapper) ── */
 function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp, onLogout, earned, onNavClick, onStartCatchup, onToggleTheme, currentTheme }) {
   const classes = classesProp || CLASSES;
+  React.useEffect(() => { recordStudyDay(); }, []);
   return (
     <div className="flex min-h-screen bg-dk-base font-sans text-dk-text antialiased">
       <div className="hidden">
