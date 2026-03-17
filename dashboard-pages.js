@@ -432,7 +432,10 @@ function ClassDetailPage({ cls, onBack, onStartCheckpoint, onStartCatchup, onStu
     ? fmtDate(lastCp.unlockDate)
     : (lastCp && lastCp.date) || '—';
 
-  const lb = typeof generateLeaderboard === 'function' ? generateLeaderboard(cls) : null;
+  const userName = 'You';
+  const lb = typeof generateLeaderboard === 'function'
+    ? generateLeaderboard(cls.id, points, userName, done)
+    : null;
 
   const stats = [
     { label: 'Rank', val: cls.enrolled > 0 ? `#${cls.userRank}/${cls.enrolled}` : '—', color: 'text-dk-text' },
@@ -530,8 +533,8 @@ function ClassDetailPage({ cls, onBack, onStartCheckpoint, onStartCatchup, onStu
             <span className="text-sm font-semibold text-dk-text">Class Leaderboard</span>
           </div>
           <div className="divide-y divide-dk-border">
-            {lb.rows.slice(0, 5).map(entry => (
-              <div key={entry.id} className={`flex items-center gap-3 px-5 py-3 ${entry.isUser ? 'bg-coral/5' : ''}`}>
+            {lb.top5.map(entry => (
+              <div key={entry.name} className={`flex items-center gap-3 px-5 py-3 ${entry.isUser ? 'bg-coral/5' : ''}`}>
                 <span className="w-6 font-mono text-xs text-dk-muted text-center">{entry.rank}</span>
                 <span className="flex-1 text-sm text-dk-text truncate">{entry.name}</span>
                 <span className="font-mono text-xs text-coral font-semibold">{entry.pts}pts</span>

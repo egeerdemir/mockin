@@ -479,7 +479,7 @@ function Sidebar({ onNavClick, user, onLogout, onToggleTheme, currentTheme, acti
 }
 
 /* ── MainContent ── */
-function MainContent({ onStartCheckpoint, classes, userName, user, earned, onStartCatchup }) {
+function MainContent({ onStartCheckpoint, classes, userName, user, earned, onStartCatchup, onViewClass }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
   return (
@@ -736,7 +736,7 @@ function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp,
       <div className="hidden">
         <Sidebar user={user} onLogout={onLogout} onNavClick={onNavClick} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
       </div>
-      <MainContent onStartCheckpoint={onStartCheckpoint} classes={classes} userName={user && user.name} user={user} earned={earned} onStartCatchup={onStartCatchup} />
+      <MainContent onStartCheckpoint={onStartCheckpoint} classes={classes} userName={user && user.name} user={user} earned={earned} onStartCatchup={onStartCatchup} onViewClass={onViewClass} />
       <RightPanel onStartExam={onStartExam} onStartCheckpoint={onStartCheckpoint} onStartCatchup={onStartCatchup} classes={classes} />
       <StickyRankBar classes={classes} user={user} />
     </div>
