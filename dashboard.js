@@ -140,30 +140,30 @@ function ClassCard({ cls, onViewClass }) {
   return (
     <div
       onClick={() => onViewClass && onViewClass(cls.id)}
-      className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card hover:border-coral transition-all duration-200 cursor-pointer"
+      className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card hover:border-coral transition-all duration-200 cursor-pointer flex flex-col gap-3 aspect-square"
     >
-      <div className="flex items-start justify-between gap-3 mb-3">
+      {/* Top row: code + ECTS */}
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="font-mono text-xs font-semibold text-coral tracking-wide">{cls.code}</span>
-            {cls.hasCatchup && <span className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" title="Catch-up available" />}
-          </div>
-          <p className="text-dk-dim text-xs truncate max-w-xs" title={cls.fullName}>{cls.fullName}</p>
+          <span className="font-mono text-xs font-bold text-coral tracking-wide block">{cls.code}</span>
+          {cls.hasCatchup && <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block mt-1" title="Catch-up available" />}
         </div>
-        <span className="flex-shrink-0 font-mono text-xs text-dk-muted bg-dk-hover border border-dk-border px-2.5 py-1 rounded-lg">{cls.ects} ECTS</span>
+        <span className="flex-shrink-0 font-mono text-2xs text-dk-muted bg-dk-hover border border-dk-border px-2 py-0.5 rounded-md">{cls.ects} ECTS</span>
       </div>
 
-      <div className="mb-2 h-1 bg-dk-hover rounded-full overflow-hidden">
-        <div className="h-full rounded-full bg-mint" style={{ width: `${progress}%` }} />
-      </div>
+      {/* Class name — grows to fill space */}
+      <p className="text-dk-text text-xs font-medium leading-snug flex-1">{cls.fullName}</p>
 
-      <div className="flex items-center justify-between">
-        <span className="text-2xs font-mono text-dk-muted">{done}/{cls.checkpoints.length} checkpoints</span>
-        <span className="text-2xs font-mono text-dk-muted">
-          {cls.enrolled > 0 ? `#${cls.userRank} · top ${percnt}%` : '—'} · <span className="text-coral">{points}pts</span>
-        </span>
+      {/* Progress bar */}
+      <div>
+        <div className="h-1 bg-dk-hover rounded-full overflow-hidden mb-1.5">
+          <div className="h-full rounded-full bg-mint" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-2xs font-mono text-dk-muted">{done}/{cls.checkpoints.length} CPs</span>
+          <span className="text-2xs font-mono text-coral font-semibold">{points}pts</span>
+        </div>
       </div>
-
     </div>
   );
 }
@@ -543,7 +543,7 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
         <h2 className="font-heading font-semibold text-dk-text text-base">Active Classes</h2>
         <span className="text-2xs font-mono text-dk-muted bg-dk-card border border-dk-border px-2.5 py-1 rounded-lg">{classes.length} classes</span>
       </div>
-      <div className="space-y-3 mb-2">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         {classes.map(cls => <ClassCard key={cls.id} cls={cls} onViewClass={onViewClass} />)}
       </div>
       <Leaderboard cls={classes[0]} user={user} />
