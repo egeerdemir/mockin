@@ -128,156 +128,42 @@ function CheckpointDot({ cp, index, onStart }) {
 }
 
 /* ── ClassCard ── */
-function ClassCard({ cls, onStartCheckpoint, onStartCatchup }) {
-  /* Support both new (totalPoints) and legacy (score × ects) point display */
+function ClassCard({ cls, onViewClass }) {
   const points = cls.totalPoints !== undefined ? cls.totalPoints : calcPts(cls.userScore, cls.ects);
   const percnt = cls.enrolled > 0 ? calcPct(cls.userRank, cls.enrolled) : 0;
-
   const done = cls.checkpoints.filter(c => {
     const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
     return s === 'done' || s === 'weak';
   }).length;
   const progress = Math.round((done / cls.checkpoints.length) * 100);
 
-  const completed = cls.checkpoints.filter(c => c.score !== null);
-  const avgScore = completed.length
-    ? Math.round(completed.reduce((s, c) => s + c.score, 0) / completed.length)
-    : null;
-
-  /* First unlocked-but-not-completed checkpoint */
-  const nextAvailable = cls.checkpoints.find(c => {
-    const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
-    return s === 'available';
-  });
-
-  const firstDate = cls.checkpoints[0] && cls.checkpoints[0].unlockDate
-    ? fmtDate(cls.checkpoints[0].unlockDate)
-    : (cls.checkpoints[0] && cls.checkpoints[0].date) || '—';
-  const lastCp = cls.checkpoints[cls.checkpoints.length - 1];
-  const lastDate = lastCp && lastCp.unlockDate
-    ? fmtDate(lastCp.unlockDate)
-    : (lastCp && lastCp.date) || '—';
-
   return (
-    <div className="bg-dk-card border border-dk-border rounded-2xl p-5 shadow-card hover:border-dk-line transition-all duration-200">
-      <div className="flex items-start justify-between gap-3 mb-4">
+    <div
+      onClick={() => onViewClass && onViewClass(cls.id)}
+      className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card hover:border-coral transition-all duration-200 cursor-pointer"
+    >
+      <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <span className="font-mono text-xs font-semibold text-coral tracking-wide">{cls.code}</span>
-            {cls.hasCatchup && <Tag variant="yellow">Catch-up</Tag>}
+            {cls.hasCatchup && <span className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0" title="Catch-up available" />}
           </div>
           <p className="text-dk-dim text-xs truncate max-w-xs" title={cls.fullName}>{cls.fullName}</p>
         </div>
         <span className="flex-shrink-0 font-mono text-xs text-dk-muted bg-dk-hover border border-dk-border px-2.5 py-1 rounded-lg">{cls.ects} ECTS</span>
       </div>
 
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-2xs font-medium text-dk-muted uppercase tracking-wider">Checkpoints</span>
-          <span className="text-2xs font-mono text-dk-muted">{done}/{cls.checkpoints.length} done</span>
-        </div>
-        <div className="flex items-center gap-0">
-          {cls.checkpoints.map((cp, i) => (
-            <div key={i} className="flex items-center flex-1 gap-0">
-              <CheckpointDot
-                cp={cp} index={i}
-                onStart={onStartCheckpoint ? (cpId) => onStartCheckpoint(cls.id, cpId) : null}
-              />
-              {i < cls.checkpoints.length - 1 && (
-                <div className={`flex-1 h-px mx-0.5 ${
-                  (getCheckpointStatus(cp) === 'done' || getCheckpointStatus(cp) === 'weak')
-                    ? 'bg-dk-line' : 'bg-dk-border'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-between mt-1.5">
-          <span className="text-2xs font-mono text-dk-muted">{firstDate}</span>
-          <span className="text-2xs font-mono text-dk-muted">{lastDate}</span>
-        </div>
+      <div className="mb-2 h-1 bg-dk-hover rounded-full overflow-hidden">
+        <div className="h-full rounded-full bg-mint" style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="mb-4 h-1 bg-dk-hover rounded-full overflow-hidden">
-        <div className="fill-bar h-full rounded-full bg-mint" style={{ width: `${progress}%` }} />
+      <div className="flex items-center justify-between">
+        <span className="text-2xs font-mono text-dk-muted">{done}/{cls.checkpoints.length} checkpoints</span>
+        <span className="text-2xs font-mono text-dk-muted">
+          {cls.enrolled > 0 ? `#${cls.userRank} · top ${percnt}%` : '—'} · <span className="text-coral">{points}pts</span>
+        </span>
       </div>
 
-      <div className="flex items-center gap-2 text-xs flex-wrap">
-        {[
-          { label:'Rank',   val: cls.enrolled > 0 ? `#${cls.userRank} / ${cls.enrolled}` : '—', color:'text-dk-text' },
-          { label:'Points (best)', val: points, color:'text-coral' },
-          { label:'Top',    val: cls.enrolled > 0 ? `${percnt}%` : '—', color: percnt<=10?'text-mint':percnt<=25?'text-lavender':'text-dk-dim' },
-          ...(avgScore ? [{ label:'Avg', val:avgScore, color:'text-dk-dim' }] : []),
-        ].map(s => (
-          <div key={s.label} className="flex items-center gap-2 bg-dk-hover rounded-xl px-3 py-2 flex-1 min-w-max">
-            <span className="text-dk-muted text-2xs">{s.label}</span>
-            <span className={`font-mono font-semibold ${s.color}`}>{s.val}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Retake completed checkpoints */}
-      {onStartCheckpoint && cls.checkpoints.some(cp => {
-        const s = cp.unlockDate !== undefined ? getCheckpointStatus(cp) : cp.status;
-        return s === 'done' || s === 'weak';
-      }) && (
-        <div className="mt-3 pt-3 border-t border-dk-border space-y-1.5">
-          {cls.checkpoints.map((cp, i) => {
-            const s = cp.unlockDate !== undefined ? getCheckpointStatus(cp) : cp.status;
-            if (s !== 'done' && s !== 'weak') return null;
-            const label = cp.label || `Checkpoint ${i + 1}`;
-            return (
-              <div key={cp.id} className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-medium font-mono flex-shrink-0 ${s === 'done' ? 'bg-mint bg-opacity-15 text-mint' : 'bg-coral bg-opacity-15 text-coral'}`}>
-                    {cp.score !== null ? cp.score : '—'}
-                  </span>
-                  <span className="text-dk-muted text-xs truncate">{label}</span>
-                </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {s === 'weak' && onStartCatchup && (
-                    <button
-                      onClick={() => onStartCatchup(cls.id, cp.id)}
-                      className="border border-yellow-500 border-opacity-50 text-yellow-400 hover:bg-yellow-400 hover:bg-opacity-10 text-2xs font-semibold px-3 py-1 rounded-lg transition-colors"
-                    >
-                      Catch-up →
-                    </button>
-                  )}
-                  <button
-                    onClick={() => onStartCheckpoint(cls.id, cp.id)}
-                    title={s === 'done' ? 'Score below 70 will downgrade this checkpoint to Weak' : undefined}
-                    className={s === 'done'
-                      ? 'border border-dk-border text-dk-muted hover:border-dk-line hover:text-dk-text text-2xs font-semibold px-3 py-1 rounded-lg flex-shrink-0'
-                      : 'bg-coral text-dk-base text-2xs font-bold px-3 py-1 rounded-lg hover:opacity-90 flex-shrink-0'
-                    }
-                  >
-                    Retake
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Start next available checkpoint */}
-      {nextAvailable && onStartCheckpoint && (
-        <div className="mt-3 pt-3 border-t border-dk-border">
-          <button
-            onClick={() => onStartCheckpoint(cls.id, nextAvailable.id)}
-            className="w-full flex items-center justify-between px-4 py-2.5 bg-coral bg-opacity-10 border border-coral border-opacity-30 rounded-xl hover:bg-opacity-20 transition-all group"
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="text-coral text-sm">▶</span>
-              <div className="text-left">
-                <p className="text-coral text-xs font-semibold">{nextAvailable.label}</p>
-                <p className="text-dk-muted text-2xs">Available now · 40 min</p>
-              </div>
-            </div>
-            <span className="text-coral text-xs font-medium group-hover:translate-x-0.5 transition-transform">Start →</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -658,7 +544,7 @@ function MainContent({ onStartCheckpoint, classes, userName, user, earned, onSta
         <span className="text-2xs font-mono text-dk-muted bg-dk-card border border-dk-border px-2.5 py-1 rounded-lg">{classes.length} classes</span>
       </div>
       <div className="space-y-3 mb-2">
-        {classes.map(cls => <ClassCard key={cls.id} cls={cls} onStartCheckpoint={onStartCheckpoint} onStartCatchup={onStartCatchup} />)}
+        {classes.map(cls => <ClassCard key={cls.id} cls={cls} onViewClass={onViewClass} />)}
       </div>
       <Leaderboard cls={classes[0]} user={user} />
       <AchievementsCard earned={earned} />
@@ -842,7 +728,7 @@ function StickyRankBar({ classes, user }) {
 }
 
 /* ── Dashboard (wrapper) ── */
-function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp, onLogout, earned, onNavClick, onStartCatchup, onToggleTheme, currentTheme }) {
+function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp, onLogout, earned, onNavClick, onStartCatchup, onToggleTheme, currentTheme, onViewClass }) {
   const classes = classesProp || CLASSES;
   React.useEffect(() => { recordStudyDay(); }, []);
   return (

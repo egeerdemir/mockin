@@ -397,3 +397,159 @@ function ProfilePage({ user, profileTab, onSave, onApiKeySave, onApiKeyRemove, o
 }
 
 window.ProfilePage = ProfilePage;
+
+/* ══════════════════════════════════════════════
+   CLASS DETAIL PAGE
+   ══════════════════════════════════════════════ */
+
+function ClassDetailPage({ cls, onBack, onStartCheckpoint, onStartCatchup, onStudy }) {
+  if (!cls) return null;
+
+  const points = cls.totalPoints !== undefined ? cls.totalPoints : calcPts(cls.userScore, cls.ects);
+  const percnt = cls.enrolled > 0 ? calcPct(cls.userRank, cls.enrolled) : 0;
+
+  const done = cls.checkpoints.filter(c => {
+    const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
+    return s === 'done' || s === 'weak';
+  }).length;
+  const progress = Math.round((done / cls.checkpoints.length) * 100);
+
+  const completed = cls.checkpoints.filter(c => c.score !== null);
+  const avgScore = completed.length
+    ? Math.round(completed.reduce((s, c) => s + c.score, 0) / completed.length)
+    : null;
+
+  const nextAvailable = cls.checkpoints.find(c => {
+    const s = c.unlockDate !== undefined ? getCheckpointStatus(c) : c.status;
+    return s === 'available';
+  });
+
+  const firstDate = cls.checkpoints[0] && cls.checkpoints[0].unlockDate
+    ? fmtDate(cls.checkpoints[0].unlockDate)
+    : (cls.checkpoints[0] && cls.checkpoints[0].date) || '—';
+  const lastCp = cls.checkpoints[cls.checkpoints.length - 1];
+  const lastDate = lastCp && lastCp.unlockDate
+    ? fmtDate(lastCp.unlockDate)
+    : (lastCp && lastCp.date) || '—';
+
+  const lb = typeof generateLeaderboard === 'function' ? generateLeaderboard(cls) : null;
+
+  const stats = [
+    { label: 'Rank', val: cls.enrolled > 0 ? `#${cls.userRank}/${cls.enrolled}` : '—', color: 'text-dk-text' },
+    { label: 'Points', val: points, color: 'text-coral' },
+    { label: 'Top', val: cls.enrolled > 0 ? `${percnt}%` : '—', color: percnt <= 10 ? 'text-mint' : percnt <= 25 ? 'text-lavender' : 'text-dk-dim' },
+    { label: 'Avg Score', val: avgScore ? `${avgScore}%` : '—', color: 'text-dk-dim' },
+  ];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-dk-muted text-xs hover:text-coral transition-colors mb-5">
+        <span>←</span><span>Classes</span>
+      </button>
+
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-mono text-lg font-bold text-coral">{cls.code}</span>
+          {cls.hasCatchup && <Tag variant="yellow">Catch-up</Tag>}
+        </div>
+        <h1 className="text-dk-text font-heading font-bold text-xl mb-2">{cls.fullName}</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-mono text-xs text-dk-muted bg-dk-hover border border-dk-border px-2.5 py-1 rounded-lg">{cls.ects} ECTS</span>
+          <span className="font-mono text-xs text-dk-muted bg-dk-hover border border-dk-border px-2.5 py-1 rounded-lg">{cls.enrolled} enrolled</span>
+          <span className={`font-mono text-xs px-2.5 py-1 rounded-lg border ${percnt <= 10 ? 'text-mint border-mint/30 bg-mint/10' : 'text-dk-muted border-dk-border bg-dk-hover'}`}>top {percnt}%</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {stats.map(s => (
+          <div key={s.label} className="bg-dk-card border border-dk-border rounded-xl p-3 flex flex-col gap-1">
+            <span className="text-2xs font-medium text-dk-muted uppercase tracking-wider">{s.label}</span>
+            <span className={`font-mono font-bold text-lg ${s.color}`}>{s.val}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-dk-card border border-dk-border rounded-2xl p-5 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-semibold text-dk-text">Checkpoints</span>
+          <span className="text-2xs font-mono text-dk-muted">{done}/{cls.checkpoints.length} done</span>
+        </div>
+        <div className="flex items-center gap-0 mb-2">
+          {cls.checkpoints.map((cp, i) => (
+            <div key={i} className="flex items-center flex-1 gap-0">
+              <CheckpointDot
+                cp={cp} index={i}
+                onStart={onStartCheckpoint ? (cpId) => onStartCheckpoint(cls.id, cpId) : null}
+              />
+              {i < cls.checkpoints.length - 1 && (
+                <div className={`flex-1 h-px mx-0.5 ${
+                  (getCheckpointStatus(cp) === 'done' || getCheckpointStatus(cp) === 'weak')
+                    ? 'bg-dk-line' : 'bg-dk-border'
+                }`} />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mb-3">
+          <span className="text-2xs font-mono text-dk-muted">{firstDate}</span>
+          <span className="text-2xs font-mono text-dk-muted">{lastDate}</span>
+        </div>
+        <div className="h-1.5 bg-dk-hover rounded-full overflow-hidden">
+          <div className="h-full rounded-full bg-mint" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 mb-6">
+        {nextAvailable && (
+          <button
+            onClick={() => onStartCheckpoint && onStartCheckpoint(cls.id, nextAvailable.id)}
+            className="w-full py-3 rounded-xl bg-coral text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+          >
+            Start Next Checkpoint →
+          </button>
+        )}
+        {cls.hasCatchup && (
+          <button
+            onClick={() => onStartCatchup && onStartCatchup(cls.id)}
+            className="w-full py-3 rounded-xl border border-yellow-400/50 text-yellow-400 font-semibold text-sm hover:bg-yellow-400/10 transition-colors"
+          >
+            Catch-up Topics
+          </button>
+        )}
+        <button
+          onClick={() => onStudy && onStudy(cls.id)}
+          className="w-full py-3 rounded-xl border border-dk-border text-dk-muted font-semibold text-sm hover:border-coral hover:text-coral transition-colors"
+        >
+          Study This Class →
+        </button>
+      </div>
+
+      {lb && (
+        <div className="bg-dk-card border border-dk-border rounded-2xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-dk-border">
+            <span className="text-sm font-semibold text-dk-text">Class Leaderboard</span>
+          </div>
+          <div className="divide-y divide-dk-border">
+            {lb.rows.slice(0, 5).map(entry => (
+              <div key={entry.id} className={`flex items-center gap-3 px-5 py-3 ${entry.isUser ? 'bg-coral/5' : ''}`}>
+                <span className="w-6 font-mono text-xs text-dk-muted text-center">{entry.rank}</span>
+                <span className="flex-1 text-sm text-dk-text truncate">{entry.name}</span>
+                <span className="font-mono text-xs text-coral font-semibold">{entry.pts}pts</span>
+              </div>
+            ))}
+            {lb.userRank > 5 && (
+              <>
+                <div className="px-5 py-2 text-center text-dk-muted text-2xs font-mono">· · · {lb.userRank - 6} more · · ·</div>
+                <div className="flex items-center gap-3 px-5 py-3 bg-coral/5">
+                  <span className="w-6 font-mono text-xs text-coral text-center font-bold">{lb.userRank}</span>
+                  <span className="flex-1 text-sm text-coral font-semibold truncate">You</span>
+                  <span className="font-mono text-xs text-coral font-semibold">{points}pts</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1539,6 +1539,7 @@ function App() {
   const [results, setResults] = useS(null);
   const [examCtx, setExamCtx] = useS(null); /* { classId, cpId, cpIndex, examConfig } */
   const [communityView, setCommunityView] = useS('bank');
+  const [selectedClassId, setSelectedClassId] = useS(null);
   const [profileTab, setProfileTab] = useS('profile');
   const [theme, setTheme] = useS(() => typeof loadTheme === 'function' ? loadTheme() : 'dark');
   const earned = uM(() => loadAchievements(), [progress]);
@@ -1755,6 +1756,17 @@ function App() {
   };
 
   /* ── Self Study ── */
+  if (view === 'class-detail') return (
+    <AppShell {...shellProps} currentView="dashboard">
+      <ClassDetailPage
+        cls={enrichedClasses && enrichedClasses.find(c => c.id === selectedClassId)}
+        onBack={() => setView('dashboard')}
+        onStartCheckpoint={startCheckpointExam}
+        onStartCatchup={startCatchupExam}
+        onStudy={(id) => { setSelectedClassId(id); setView('self-study'); }}
+      />
+    </AppShell>
+  );
   if (view === 'self-study') return (
     <AppShell {...shellProps} currentView="dashboard">
       <SelfStudyPage
@@ -1858,6 +1870,7 @@ function App() {
         currentTheme={theme}
         onNavClick={shellProps.onNavClick}
         onLogout={shellProps.onLogout}
+        onViewClass={(id) => { setSelectedClassId(id); setView('class-detail'); }}
       />
     </AppShell>
   );
