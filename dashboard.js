@@ -140,7 +140,7 @@ function ClassCard({ cls, onViewClass }) {
   return (
     <div
       onClick={() => onViewClass && onViewClass(cls.id)}
-      className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card hover:border-coral transition-all duration-200 cursor-pointer flex flex-col gap-3 aspect-square"
+      className="bg-dk-card border border-dk-border rounded-2xl p-4 shadow-card hover:border-coral transition-all duration-200 cursor-pointer flex flex-col gap-3 h-36"
     >
       {/* Top row: code + ECTS */}
       <div className="flex items-start justify-between gap-2">
