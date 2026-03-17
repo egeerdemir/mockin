@@ -59,7 +59,7 @@ function recordStudyDay() {
 /* ── Avatar ── */
 function Avatar({ initials, color='bg-coral', size='md' }) {
   const sz = { xs:'w-6 h-6 text-2xs', sm:'w-7 h-7 text-xs', md:'w-8 h-8 text-xs', lg:'w-10 h-10 text-sm' }[size];
-  return <span className={`${sz} ${color} rounded-full flex items-center justify-center font-heading font-bold text-dk-base flex-shrink-0 select-none`}>{initials}</span>;
+  return <span className={`${sz} ${color} rounded-full flex items-center justify-center font-heading font-bold text-white flex-shrink-0 select-none`}>{initials}</span>;
 }
 
 /* ── Tag ── */
@@ -733,9 +733,6 @@ function Dashboard({ onStartExam, onStartCheckpoint, user, classes: classesProp,
   React.useEffect(() => { recordStudyDay(); }, []);
   return (
     <div className="flex min-h-screen bg-dk-base font-sans text-dk-text antialiased">
-      <div className="hidden">
-        <Sidebar user={user} onLogout={onLogout} onNavClick={onNavClick} onToggleTheme={onToggleTheme} currentTheme={currentTheme} />
-      </div>
       <MainContent onStartCheckpoint={onStartCheckpoint} classes={classes} userName={user && user.name} user={user} earned={earned} onStartCatchup={onStartCatchup} onViewClass={onViewClass} />
       <RightPanel onStartExam={onStartExam} onStartCheckpoint={onStartCheckpoint} onStartCatchup={onStartCatchup} classes={classes} />
       <StickyRankBar classes={classes} user={user} />

@@ -35,6 +35,7 @@ function clearUser() {
   localStorage.removeItem(RANKS_KEY);
   localStorage.removeItem(ACHIEVEMENTS_KEY);
   localStorage.removeItem(COMMUNITY_KEY);
+  localStorage.removeItem('mockin_study_dates');
   clearApiKey();
 }
 

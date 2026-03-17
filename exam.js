@@ -921,7 +921,7 @@ function SelfStudyPage({ classes, onBack, onOpenCommunity }) {
   /* ── HUB ── */
   if (phase === 'hub') return (
     <div className="min-h-screen bg-dk-base font-sans text-dk-text antialiased">
-      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-14 lg:top-0 z-40">
+      <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-0 z-40">
         <button onClick={onBack} className="text-dk-muted hover:text-dk-text text-sm font-medium flex items-center gap-1.5 hover:bg-dk-hover px-2.5 py-1.5 rounded-lg transition-colors">← Back</button>
         <div className="h-5 w-px bg-dk-border" />
         <span className="font-heading font-bold text-dk-text text-sm">Self Study</span>
@@ -1497,7 +1497,7 @@ function AppShell({ user, earned, onNavClick, onLogout, onToggleTheme, currentTh
         </button>
 
         {/* Content */}
-        <div className="pt-16 min-h-screen">{children}</div>
+        <div className="pt-14 min-h-screen">{children}</div>
 
         {/* Backdrop */}
         {sidebarOpen && (
@@ -1505,7 +1505,7 @@ function AppShell({ user, earned, onNavClick, onLogout, onToggleTheme, currentTh
         )}
 
         {/* Slide-in drawer */}
-        <div className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-250 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <Sidebar
             user={user}
             activeItem={currentView}
@@ -1544,7 +1544,7 @@ function App() {
   const [theme, setTheme] = useS(() => typeof loadTheme === 'function' ? loadTheme() : 'dark');
   const earned = uM(() => loadAchievements(), [progress]);
 
-  useEf(() => { document.documentElement.setAttribute('data-theme', theme); }, []);
+  useEf(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
 
   function toggleTheme() {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -1740,7 +1740,7 @@ function App() {
     earned,
     onNavClick: (id, tab) => {
       if (tab) setProfileTab(tab);
-      if (id !== 'exercises') setCommunityView('list');
+      if (id !== 'exercises') setCommunityView('bank');
       if (id === 'profile' || id === 'user-profile') { setView('user-profile'); return; }
       if (id === 'leaderboard') { setView('leaderboard'); return; }
       if (id === 'exams') { setView('exams'); return; }
@@ -1817,7 +1817,7 @@ function App() {
   if (view === 'exams') return (
     <AppShell {...shellProps} currentView="exams">
       <ExamsPage
-        assignedClasses={userProfile && userProfile.assignedClasses ? userProfile.assignedClasses : []}
+        assignedClasses={enrichedClasses || []}
         onBack={() => setView('dashboard')}
       />
     </AppShell>

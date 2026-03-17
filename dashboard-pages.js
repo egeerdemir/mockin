@@ -52,7 +52,7 @@ function LeaderboardRow({ rank, name, points, checkpointsDone, isCurrentUser }) 
         {name}
       </span>
       <span className="text-dk-text text-xs font-mono w-16 text-right flex-shrink-0">{points} pts</span>
-      <span className="text-dk-muted text-xs w-12 text-right flex-shrink-0">{checkpointsDone}/6 ✓</span>
+      <span className="text-dk-muted text-xs w-12 text-right flex-shrink-0">{checkpointsDone ? `${checkpointsDone}/6 ✓` : '—'}</span>
     </div>
   );
 }
@@ -77,7 +77,7 @@ function ClassLeaderboard({ classId, cls, rankData, userName }) {
             name={entry.name}
             points={entry.pts}
             checkpointsDone={entry.checkpointsDone || 0}
-            isCurrentUser={entry.name === userName}
+            isCurrentUser={entry.isUser}
           />
         ))}
       </div>

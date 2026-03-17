@@ -31,7 +31,7 @@ function OnboardingShell({ step, totalSteps, children, wide }) {
         )}
       </header>
       {/* Body */}
-      <div className={`flex-1 flex items-center justify-center px-4 py-10 ${wide ? '' : ''}`}>
+      <div className="flex-1 flex items-center justify-center px-4 py-10">
         <div className={wide ? 'w-full max-w-2xl' : 'w-full max-w-sm'}>
           {children}
         </div>
