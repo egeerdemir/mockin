@@ -104,6 +104,15 @@ const CLASSES = [
 ];
 
 
+const CHECKPOINT_REWARDS = [
+  { icon: '☕', title: 'Free Coffee',       desc: 'Redeem at Café Akademie — show this screen to the barista', partner: 'Café Akademie' },
+  { icon: '🍽️', title: 'Free Mensa Day',    desc: 'One free meal at any RWTH Mensa — show to the cashier',    partner: 'RWTH Mensa' },
+  { icon: '📚', title: '20% at UniShop',    desc: 'Discount on RWTH merchandise & stationery',                partner: 'RWTH UniShop' },
+  { icon: '🎟️', title: 'AStA Event Ticket', desc: 'One free entry to the next AStA student event',            partner: 'AStA RWTH' },
+  { icon: '🏊', title: 'Free Sports Day',   desc: 'Free access to RWTH Hochschulsport for one day',           partner: 'Hochschulsport' },
+  { icon: '🏆', title: 'Season Champion',   desc: 'Your name on the MockIn Hall of Fame — season complete!',  partner: 'MockIn' },
+];
+
 const UPCOMING_EXAMS = [
   { code: 'METM W26',   title: 'Checkpoint 5', date: 'Mar 28', daysLeft: 11, type: 'mock' },
   { code: 'THERMO W26', title: 'Checkpoint 4', date: 'Apr 4',  daysLeft: 18, type: 'mock' },

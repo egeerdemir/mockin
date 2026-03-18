@@ -477,6 +477,7 @@ function FeedbackCard({ score, weakTopics, subject }) {
 
 /* ── ResultsPage ── */
 function ResultsPage({ results, exam, onReturn, onReview }) {
+  const [showReward, setShowReward] = React.useState(() => !!results.reward);
   return (
     <div className="min-h-screen bg-dk-base font-sans text-dk-text antialiased">
       <header className="h-14 bg-dk-card border-b border-dk-border flex items-center px-6 gap-4 sticky top-0 z-40">
@@ -509,10 +510,41 @@ function ResultsPage({ results, exam, onReturn, onReview }) {
         <FeedbackCard score={results.score} weakTopics={results.weakTopics || (results.topicResults || []).filter(t => t.pct < 70).map(t => t.topic)} subject={results.subject || ''} />
         <TopicBreakdownCard topicResults={results.topicResults} />
         <StrengthWeaknessPanel topicResults={results.topicResults} />
+        {results.reward && (
+          <button onClick={() => setShowReward(true)} className="w-full mt-2 py-2.5 rounded-xl border border-coral/40 text-coral text-sm font-semibold hover:bg-coral/10 transition-colors flex items-center justify-center gap-2">
+            <span>{results.reward.icon}</span> View Reward
+          </button>
+        )}
         <div className="flex gap-3 mt-4">
           <button onClick={onReturn} className="flex-1 py-3 bg-dk-card border border-dk-border rounded-xl text-dk-muted text-sm font-medium hover:border-dk-line hover:text-dk-text transition-colors">← Return to Dashboard</button>
           <button onClick={onReview || undefined} disabled={!onReview} className="flex-1 py-3 bg-coral text-dk-base rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-glow disabled:opacity-50">Review Answers</button>
         </div>
+      </div>
+      {showReward && <RewardModal reward={results.reward} onClose={() => setShowReward(false)} />}
+    </div>
+  );
+}
+
+/* ── RewardModal ── */
+function RewardModal({ reward, onClose }) {
+  if (!reward) return null;
+  return (
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+      <div className="bg-dk-card border border-dk-border rounded-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 shadow-2xl">
+        <div className="text-6xl">{reward.icon}</div>
+        <div className="text-center">
+          <p className="text-dk-muted text-xs font-mono uppercase tracking-widest mb-1">Reward Unlocked 🎉</p>
+          <h2 className="text-dk-text font-heading font-bold text-xl mb-1">{reward.title}</h2>
+          <p className="text-dk-dim text-sm">{reward.desc}</p>
+        </div>
+        <div className="w-full bg-dk-hover border border-dk-border rounded-xl p-3 text-center">
+          <p className="text-dk-muted text-2xs font-mono uppercase tracking-wider mb-0.5">Partner</p>
+          <p className="text-dk-text text-sm font-semibold">{reward.partner}</p>
+        </div>
+        <p className="text-dk-muted text-2xs text-center">Show this screen at the partner location to redeem</p>
+        <button onClick={onClose} className="w-full py-3 rounded-xl bg-coral text-white font-semibold text-sm hover:opacity-90 transition-opacity">
+          Awesome, thanks! →
+        </button>
       </div>
     </div>
   );
@@ -1630,7 +1662,10 @@ function App() {
       const newlyUnlocked = earnedIds.filter(id => !previous.includes(id));
       if (newlyUnlocked.length > 0) saveAchievements(earnedIds);
 
-      setResults({ ...res, pointsEarned: pts, newlyUnlocked, subject });
+      const reward = (res.score >= 60 && typeof CHECKPOINT_REWARDS !== 'undefined')
+        ? CHECKPOINT_REWARDS[examCtx.cpIndex % CHECKPOINT_REWARDS.length]
+        : null;
+      setResults({ ...res, pointsEarned: pts, newlyUnlocked, subject, reward });
     } else {
       setResults({ ...res, newlyUnlocked: [], subject });
     }
