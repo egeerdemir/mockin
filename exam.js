@@ -1352,16 +1352,17 @@ function CommunityBankPage({ classes, onBack, onOpenSubmit }) {
 }
 
 /* ── QuestionSubmitForm ── */
-function QuestionSubmitForm({ classes, onSubmit, onBack }) {
-  const [classId, setClassId]     = useS((classes && classes[0]) ? classes[0].id : '');
-  const [topic, setTopic]         = useS('');
+function QuestionSubmitForm({ classes, onSubmit, onBack, userName }) {
+  const [classId, setClassId]       = useS((classes && classes[0]) ? classes[0].id : '');
+  const [topic, setTopic]           = useS('');
   const [topicOther, setTopicOther] = useS('');
   const [difficulty, setDifficulty] = useS('medium');
-  const [text, setText]           = useS('');
-  const [options, setOptions]     = useS(['', '', '', '']);
-  const [correct, setCorrect]     = useS(null);
-  const [errors, setErrors]       = useS({});
-  const [done, setDone]           = useS(false);
+  const [text, setText]             = useS('');
+  const [options, setOptions]       = useS(['', '', '', '']);
+  const [correct, setCorrect]       = useS(null);
+  const [explanation, setExplanation] = useS('');
+  const [errors, setErrors]         = useS({});
+  const [done, setDone]             = useS(false);
 
   const topicsForClass = (id) => {
     if (typeof QUESTION_BANKS === 'undefined' || !QUESTION_BANKS[id]) return [];
@@ -1376,7 +1377,7 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
     const e = {};
     if (!classId) e.classId = 'Select a class';
     if (!resolvedTopic) e.topic = 'Enter a topic';
-    if (!text.trim()) e.text = 'Enter the question text';
+    if (!text.trim() || text.trim().length < 15) e.text = 'Question must be at least 15 characters';
     options.forEach((o, i) => { if (!o.trim()) e[`opt${i}`] = 'Required'; });
     if (correct === null) e.correct = 'Select the correct answer';
     return e;
@@ -1393,7 +1394,8 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
       text: text.trim(),
       options: options.map(o => o.trim()),
       correctAnswer: correct,
-      submittedBy: 'You',
+      submittedBy: userName || 'Anonymous',
+      explanation: explanation.trim(),
       submittedAt: new Date().toISOString().slice(0, 10),
     };
     saveCommunityQuestion(q);
@@ -1404,7 +1406,7 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
   const reset = () => {
     setClassId((classes && classes[0]) ? classes[0].id : '');
     setTopic(''); setTopicOther(''); setDifficulty('medium');
-    setText(''); setOptions(['','','','']); setCorrect(null); setErrors({}); setDone(false);
+    setText(''); setOptions(['','','','']); setCorrect(null); setExplanation(''); setErrors({}); setDone(false);
   };
 
   if (done) return (
@@ -1453,6 +1455,7 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
             <input value={topicOther} onChange={e => setTopicOther(e.target.value)} placeholder="Enter topic"
               className="mt-2 w-full bg-dk-card border border-dk-border rounded-xl px-4 py-2.5 text-dk-text text-sm focus:outline-none focus:border-coral" />
           )}
+          {topics.length === 0 && <p className="text-2xs text-dk-muted mt-1">No topics found for this class — choose "Other" to enter your own.</p>}
           {errors.topic && <p className="text-coral text-xs mt-1">{errors.topic}</p>}
         </div>
 
@@ -1473,8 +1476,9 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
         <div>
           <label className="block text-dk-muted text-xs font-semibold uppercase tracking-wider mb-1.5">Question</label>
           <textarea value={text} onChange={e => { setText(e.target.value); setErrors(prev => ({ ...prev, text: null })); }}
-            rows={3} placeholder="Enter your question here…"
+            rows={3} placeholder="Enter your question here…" maxLength={300}
             className="w-full bg-dk-card border border-dk-border rounded-xl px-4 py-3 text-dk-text text-sm focus:outline-none focus:border-coral resize-none" />
+          <p className="text-2xs text-dk-muted text-right mt-0.5">{text.length}/300</p>
           {errors.text && <p className="text-coral text-xs mt-1">{errors.text}</p>}
         </div>
 
@@ -1495,6 +1499,14 @@ function QuestionSubmitForm({ classes, onSubmit, onBack }) {
             ))}
           </div>
           {errors.correct && <p className="text-coral text-xs mt-1">{errors.correct}</p>}
+        </div>
+
+        {/* Explanation */}
+        <div>
+          <label className="block text-dk-dim text-xs font-medium mb-1.5">Explanation <span className="text-dk-muted font-normal">(optional — why is this the correct answer?)</span></label>
+          <textarea rows={2} value={explanation} onChange={e => setExplanation(e.target.value)} placeholder="e.g. The correct answer is B because..." maxLength={300}
+            className="w-full bg-dk-hover border border-dk-border rounded-xl px-3 py-2.5 text-dk-text text-sm placeholder:text-dk-muted resize-none focus:outline-none focus:border-coral transition-colors" />
+          <p className="text-2xs text-dk-muted text-right mt-0.5">{explanation.length}/300</p>
         </div>
 
         <button onClick={handleSubmit} className="w-full py-3 bg-coral text-dk-base text-sm font-bold rounded-xl hover:opacity-90 transition-opacity shadow-glow">Submit Question →</button>
@@ -1820,6 +1832,7 @@ function App() {
           classes={enrichedClasses}
           onSubmit={() => {}}
           onBack={() => setCommunityView('bank')}
+          userName={userProfile && userProfile.name ? userProfile.name : 'Anonymous'}
         />
       </AppShell>
     );
