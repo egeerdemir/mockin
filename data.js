@@ -1037,3 +1037,18 @@ const COMMUNITY_SEED_QUESTIONS = [
     submittedAt: '2026-03-05',
   },
 ];
+
+const DEGREE_PROGRESS = {
+  program: 'Materials Science B.Sc.',
+  totalEcts: 180,
+  earnedEcts: 112,
+  currentSemester: 5,
+  totalSemesters: 6,
+  categories: [
+    { name: 'Core Modules', required: 90,  earned: 78 },
+    { name: 'Electives',    required: 30,  earned: 22 },
+    { name: 'Lab Work',     required: 18,  earned: 12 },
+    { name: 'Thesis',       required: 30,  earned: 0  },
+    { name: 'Soft Skills',  required: 12,  earned: 0  },
+  ],
+};

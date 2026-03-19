@@ -246,6 +246,50 @@ function ExamsPage({ assignedClasses, onBack }) {
 
 window.ExamsPage = ExamsPage;
 
+/* ── DegreeProgressCard ── */
+function DegreeProgressCard() {
+  const d = typeof DEGREE_PROGRESS !== 'undefined' ? DEGREE_PROGRESS : null;
+  if (!d) return null;
+  const pct = Math.round((d.earnedEcts / d.totalEcts) * 100);
+  const remaining = d.totalEcts - d.earnedEcts;
+  return (
+    <div className="bg-dk-card border border-dk-border rounded-2xl p-5 mb-6">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <p className="text-dk-muted text-xs font-mono uppercase tracking-widest mb-0.5">Degree Progress</p>
+          <h3 className="text-dk-text font-heading font-bold text-base">{d.program}</h3>
+          <p className="text-dk-muted text-xs mt-0.5">Semester {d.currentSemester} of {d.totalSemesters}</p>
+        </div>
+        <div className="text-right">
+          <span className="font-mono font-bold text-2xl text-coral">{pct}%</span>
+          <p className="text-dk-muted text-2xs">{remaining} ECTS left</p>
+        </div>
+      </div>
+      <div className="h-2 bg-dk-hover rounded-full overflow-hidden mb-4">
+        <div className="h-full rounded-full bg-coral transition-all" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="space-y-2.5">
+        {d.categories.map(cat => {
+          const catPct = Math.round((cat.earned / cat.required) * 100);
+          return (
+            <div key={cat.name}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-dk-dim text-xs">{cat.name}</span>
+                <span className="font-mono text-2xs text-dk-muted">{cat.earned}/{cat.required} ECTS</span>
+              </div>
+              <div className="h-1 bg-dk-hover rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${catPct >= 100 ? 'bg-mint' : catPct > 0 ? 'bg-lavender' : 'bg-dk-border'}`}
+                  style={{ width: `${Math.min(catPct, 100)}%` }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-dk-muted text-2xs mt-4 text-center">* Mock data — connect your RWTH account to sync real progress</p>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════
    SEASON PAGE
    ══════════════════════════════════════════════ */
@@ -264,6 +308,8 @@ function SeasonPage({ user, classes, progress, onBack, onStartCheckpoint, onStar
           <span className="font-mono text-xs bg-dk-surface2 border border-dk-border text-coral px-2.5 py-1 rounded-lg">{`W${week}`}</span>
           <span className="text-xs bg-dk-hover border border-dk-border text-dk-muted px-2.5 py-1 rounded-full font-mono">Week {week} of 16</span>
         </div>
+
+        <DegreeProgressCard />
 
         <div className="bg-dk-surface border border-dk-border rounded-xl p-4 mb-6">
           <p className="text-dk-muted text-2xs font-semibold uppercase tracking-widest mb-3">Timeline</p>
